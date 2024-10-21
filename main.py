@@ -1,6 +1,7 @@
 import os
 import csv
 import time
+import random
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
@@ -54,11 +55,13 @@ def handle_spotify_exception(e):
 def scrape_playlist(playlist_id, csv_filename):
     try:
         playlist = sp.playlist(playlist_id)
+        print(f"Playlist : {playlist['name']}")
     except SpotifyException as e:
         if not handle_spotify_exception(e):
             return
-    
+
     for item in playlist['tracks']['items']:
+
         try:
             track = item['track']
             track_id = track['id']
@@ -120,14 +123,14 @@ def scrape_playlist(playlist_id, csv_filename):
             # Ajouter les informations au CSV
             add_song_to_csv(combined_data, csv_filename)
             print(f"Ajouté : {track['name']}")
+            time.sleep(random.randint(1, 3)/100)  # Attendre entre 10 et 30 millisecondes avant de passer à la chanson suivante 
 
         except SpotifyException as e:
             if not handle_spotify_exception(e):
                 continue
 
 # Liste d'ID de playlists et nom du fichier CSV
-playlists = ["37i9dQZF1DX1lVhptIYRda",
-    "37i9dQZF1DX3S58MHkLEiA",
+playlists = ["37i9dQZF1DX3S58MHkLEiA",
     "37i9dQZF1DWXJfnUiYjUKT",
     "37i9dQZF1DX3oM43CtKnRV",
     "37i9dQZF1DX889U0CL85jj",
@@ -147,3 +150,4 @@ csv_filename = 'spotify_tracks.csv'
 # Scraper chaque playlist
 for playlist_id in playlists:
     scrape_playlist(playlist_id, csv_filename)
+    time.sleep(random.randint(10, 40))  # Attendre entre 1 et 3 secondes avant de passer à la playlist suivante
