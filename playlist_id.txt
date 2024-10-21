@@ -9,10 +9,7 @@ playlist_ids = [
     '37i9dQZF1DX4sWSpwq3LiO',
     '37i9dQZF1DXcZDD7cfEKhW',
     '37i9dQZF1DWTtTyjgd08yp',
-
-
     "37i9dQZF1DWZeKCadgRdKQ",
-    "37i9dQZF1DXcF6B6QPhFDv",
     "37i9dQZF1DX1Clg9lmMyxp",
     "37i9dQZF1DXaXB8fQg7xif",
     "37i9dQZF1DX4UtSsGT1Sbe",
@@ -20,13 +17,11 @@ playlist_ids = [
     "37i9dQZF1DX4WYpdgoIcn6",
     "37i9dQZF1DWUEATvLxMdbz",
     "37i9dQZF1DWUVpAXiEPK8P",
-    "37i9dQZF1DX4dyzvuaRJ0n",
     "37i9dQZF1DXdPec7aLTmlC",
     "37i9dQZF1DWYMMr74INQlb",
     "37i9dQZF1DWX83CujKHHOn",
     "37i9dQZF1DXdFrV7COJ5ZK",
     "37i9dQZF1DWWEcRhUVtL8n",
-    "37i9dQZF1DX76Wlfdnj7AP",
     "37i9dQZF1DX5cj33LRMuK5",
     "37i9dQZF1DX6VdMW310YC7",
     "37i9dQZF1DXaXB8fQg7xif",
@@ -50,5 +45,29 @@ playlist_ids = [
     "37i9dQZF1DX5l9rcXWdrth",
     "37i9dQZF1DXdmb2nsPRAfW",
     "37i9dQZF1DX82GYcclJ3Ug",
-    "37i9dQZF1DWYMMr74INQlb"
+    "37i9dQZF1DX2A29LI7xHn1",
+    "37i9dQZF1DX186v583rmzp",
+    "37i9dQZF1DXcfZ6moR6J0G",
+    "37i9dQZF1DXcfZ6moR6J0G",
+    "37i9dQZF1DX2LTcinqsO68",
+    "37i9dQZF1DX9qNs32fujYe",
+    "37i9dQZF1DXaHfwbk1Gc26",
+    "37i9dQZF1DWWGFQLoP9qlv",
+    "37i9dQZF1DWZryfp6NSvtz",
+    "37i9dQZF1DWVqfgj8NZEp1",
+    "37i9dQZF1DXbITWG1ZJKYt",
+    "37i9dQZF1DX4wta20PHgwo",
+    "37i9dQZF1DXbHcQpOiXk1D",
+    "37i9dQZF1DWTR4ZOXTfd9K",
+    "37i9dQZF1DWWEJlAGA9gs0",
+    "37i9dQZF1DX4TAxXtX37oX",
+    "37i9dQZF1DX2VvACCrgjrt",
+    "37i9dQZF1DX3VQH3HpUgJe",
+    "37i9dQZF1DX0BcQWzuB7ZO",
+    "37i9dQZF1DX8CopunbDxgW",
+    "37i9dQZF1DXdxcBWuJkbcy",
+    "37i9dQZF1DX32NsLKyzScr"
 ]
+
+
+

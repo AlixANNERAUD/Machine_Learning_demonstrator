@@ -130,21 +130,7 @@ def scrape_playlist(playlist_id, csv_filename):
                 continue
 
 # Liste d'ID de playlists et nom du fichier CSV
-playlists = ["37i9dQZF1DX3S58MHkLEiA",
-    "37i9dQZF1DWXJfnUiYjUKT",
-    "37i9dQZF1DX3oM43CtKnRV",
-    "37i9dQZF1DX889U0CL85jj",
-    "37i9dQZF1DXcbAIldMQMIs",
-    "37i9dQZF1DX3WyVmhEeDhY",
-    "37i9dQZF1DX0HRj9P7NxeE",
-    "37i9dQZF1DX0Uv9tZ47pWo",
-    "37i9dQZF1DWSkMjlBZAZ07",
-    "37i9dQZF1DXaXB8fQg7xif",
-    "37i9dQZF1DXdMbUSbTOEeW",
-    "37i9dQZF1DX5l9rcXWdrth",
-    "37i9dQZF1DXdmb2nsPRAfW",
-    "37i9dQZF1DX82GYcclJ3Ug",
-    "37i9dQZF1DWYMMr74INQlb"]  # À remplacer par tes playlists
+playlists = []  # À remplacer par tes playlists
 csv_filename = 'spotify_tracks.csv'
 
 # Scraper chaque playlist
