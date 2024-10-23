@@ -104,17 +104,16 @@ playlist_ids = [
     "37i9dQZF1DX5IDTimEWoTd",
     "37i9dQZF1DX2R0a3scWaq6",
     "37i9dQZF1DWUNIrSzKgQbP",
+    "37i9dQZF1DXbVhgADFy3im",
+    "37i9dQZF1DX2R0a3scWaq6",
+    "37i9dQZF1DWUNIrSzKgQbP",
+    "37i9dQZF1DWVN3CZaEGWhG",
+    "37i9dQZF1DX9G8AnHuIGMy",
     "37i9dQZF1DXbVhgADFy3im"
 ]
 
 
 playlist_ids_a_faire = [
-    "37i9dQZF1DWZxZ7LXALhwW",
-    "37i9dQZF1DX2R0a3scWaq6",
-    "37i9dQZF1DWUNIrSzKgQbP",
-    "37i9dQZF1DWVN3CZaEGWhG",
-    "37i9dQZF1DX9G8AnHuIGMy",
-    "37i9dQZF1DXbVhgADFy3im",
     "37i9dQZF1DWX3387IZmjNa",
     "37i9dQZF1DX7Y7BqFok9IQ",
     "37i9dQZF1DWUb0uBnlJuTi",
