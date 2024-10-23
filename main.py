@@ -55,7 +55,7 @@ def handle_spotify_exception(e):
 def scrape_playlist(playlist_id, csv_filename):
     try:
         playlist = sp.playlist(playlist_id)
-        print(f"Playlist : {playlist['name']}")
+        print(f"Playlist : {playlist['name'] +" : " + playlist_id}")
     except SpotifyException as e:
         if not handle_spotify_exception(e):
             return
