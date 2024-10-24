@@ -147,7 +147,8 @@ playlist_ids = [
     "37i9dQZEVXbMZAjGMynsQX", 
     "37i9dQZEVXbKM896FDX8L1", 
     "37i9dQZEVXbJqdarpmTJDL";
-    "1G8IpkZKobrIlXcVPoSIuf"
+    "1G8IpkZKobrIlXcVPoSIuf",
+    "5BAwfKMtJJkVUklZGSOjb2"
 ]
 
 
