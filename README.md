@@ -24,12 +24,14 @@ The final product is a web application that allows users to provide some informa
 
 ## Methods
 
-- [ ] Query musical data from Spotify API
+- [x] Query musical data from Spotify API
 - [ ] Clustering of musical data
 - [ ] Classification of musical data
 - [ ] PCA and t-SNE for dimensionality reduction
 
 - [ ] Extract musical features from raw audio files
 - [ ] Fourier transform
+
+- [ ] Extract linguistic features from lyrics
 
 - [ ] Django web application
