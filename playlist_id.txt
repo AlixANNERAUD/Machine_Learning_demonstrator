@@ -148,13 +148,19 @@ playlist_ids = [
     "37i9dQZEVXbKM896FDX8L1", 
     "37i9dQZEVXbJqdarpmTJDL";
     "1G8IpkZKobrIlXcVPoSIuf",
-    "5BAwfKMtJJkVUklZGSOjb2"
+    "5BAwfKMtJJkVUklZGSOjb2",
+    "1LD6W0yUGghEu193n2OOJy",
+    "3Q1DIJ51dJpUO6RhnIHdVx",
+    "32twOqGf8gIswTgzG3IKxP",
+    "3TQZAOStfJWAtTw1hJhzw2",
+    "4LsX0iUP3jDzvdkK8IWYR4",
+    "1YL4XoegERoragv0RK2RC9"
 ]
 
 
 playlist_ids_a_faire = [
     
-]
+]"
 
 
 
