@@ -1,26 +1,16 @@
 import os
 import csv
-import time
+import os
 import random
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+import time
+
 from spotipy.exceptions import SpotifyException
 
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
+from core.scrap import load_spotify_client
 
 # Load API keys from environment variables
-client_id = os.getenv("SPOTIPY_CLIENT_ID")
-client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
+sp = load_spotify_client()
 
-# Authenticate with Spotify API
-auth_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
-sp = spotipy.Spotify(auth_manager=auth_manager)
 
 # Check if a song is already in the CSV
 def is_song_in_csv(song_id, csv_filename):
