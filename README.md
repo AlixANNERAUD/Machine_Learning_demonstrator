@@ -5,6 +5,29 @@
 Exploit musical data to demonstrate machine learning techniques, mainly classification and clustering.
 The final product is a web application that allows users to provide some information about their music preferences and get recommendations based on the data.
 
+## Dependencies
+
+- Python
+- Django
+- NumPy
+- Pandas
+- Scikit-learn
+- Spotipy
+
+Install the dependencies using the following command:
+
+```bash 
+pip install -r requirements.txt
+```
+
+## Usage
+
+To run the web application, use the following command:
+
+```bash
+python manage.py runserver
+```
+
 ## Key features
 
 - [ ] Use user's data (authentication required)
