@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
     path("tracks", views.tracks, name="Tracks"),
+    path("tsne", views.tsne, name="TSNE"),
 ]
