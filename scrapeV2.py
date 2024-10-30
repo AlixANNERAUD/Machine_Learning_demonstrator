@@ -1,4 +1,3 @@
-import os
 import csv
 import os
 import random
@@ -6,10 +5,10 @@ import time
 
 from spotipy.exceptions import SpotifyException
 
-from core.scrap import load_spotify_client
+from core import scrap
 
 # Load API keys from environment variables
-sp = load_spotify_client()
+sp = scrap.load_spotify_client()
 
 
 # Check if a song is already in the CSV
@@ -72,8 +71,13 @@ def get_all_playlist_tracks(playlist_id):
 
     return all_tracks
 
+
 # Main function to scrape a playlist
 def scrape_playlist(playlist_id, csv_filename):
+    if scrap.check_seen_playlist(playlist_id, "playlists.json"):
+        print(f"Playlist {playlist_id} already seen, skipping...")
+        return
+
     # Get all the tracks from the playlist
     all_tracks = get_all_playlist_tracks(playlist_id)
 
@@ -161,13 +165,16 @@ def scrape_playlist(playlist_id, csv_filename):
             combined_data = {**track_data, **audio_features_data, 'artists': artists}
             add_song_to_csv(combined_data, csv_filename)
             print(f"Added: {track['name']}")
-            time.sleep(random.randint(1, 3) / 100)  # Small delay to avoid rate limits
 
-# Example usage
-playlists = []  # Replace with actual playlist IDs
-csv_filename = 'spotify_tracks.csv'
+    scrap.save_seen_playlists(playlist_id, "playlists.json")
 
-for playlist_id in playlists:
+
+playlists = scrap.load_queued_playlists("playlists.json")
+csv_filename = "spotify_tracks.csv"
+
+for i, playlist_id in enumerate(playlists):
     scrape_playlist(playlist_id, csv_filename)
-    time.sleep(random.randint(10, 40))  # Delay between playlists to avoid rate limits
 
+    # Avoid rate limiting by waiting between requests
+    if not i == len(playlists) - 1:
+        time.sleep(random.randint(1, 10))
