@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Tracks
+{% endblock %}
+
+{% block content %}
+  <h1 class="md-typescale-display-medium">Tracks</h1>
+
+  <p class="md-typescale-body-medium">Check out these controls in a form!</p>
+
+  <div>{{ tracks|safe }}</div>
+
+  <div class="pagination">
+    <span class="step-links">
+      {% if page.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page.previous_page_number }}">previous</a>
+      {% endif %}
+
+      <span class="current">Page {{ page.number }} of {{ page.paginator.num_pages }}.</span>
+
+      {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}">next</a>
+        <a href="?page={{ page.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  </style>
+{% endblock %}
