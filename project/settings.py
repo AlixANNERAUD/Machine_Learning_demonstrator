@@ -124,5 +124,40 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 import pandas
+import logging
 
-TRACKS = pandas.read_csv("~/Téléchargements/spotify_tracks.csv")
+DATA_PATH = "."
+
+TRACKS = pandas.read_csv(f"{DATA_PATH}/tracks.csv")
+
+
+def generate_umap():
+    UMAP_PATH = f"{DATA_PATH}/umap.hdf"
+
+    try:
+        return pandas.read_hdf(UMAP_PATH, key="umap")
+    except FileNotFoundError:
+        import umap
+        
+        logging.info("UMAP file not found, generating ...")
+
+        numeric_columns = TRACKS.select_dtypes(include=["float64", "int64"]).dropna(
+            axis=0
+        )
+
+        umap_model = umap.UMAP(
+            n_components=3, n_neighbors=10, min_dist=0.1, metric="correlation"
+        )
+
+        UMAP = umap_model.fit_transform(numeric_columns)
+
+        UMAP = pandas.DataFrame(UMAP, columns=["x", "y", "z"])
+        
+        print(UMAP.info())
+        
+        UMAP.to_hdf(UMAP_PATH, key="umap")
+
+        return UMAP
+
+
+UMAP = generate_umap()
