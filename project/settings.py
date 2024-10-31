@@ -153,8 +153,6 @@ def generate_umap():
 
         UMAP = pandas.DataFrame(UMAP, columns=["x", "y", "z"])
         
-        print(UMAP.info())
-        
         UMAP.to_hdf(UMAP_PATH, key="umap")
 
         return UMAP

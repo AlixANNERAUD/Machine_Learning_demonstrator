@@ -28,8 +28,6 @@ def tracks_view(request):
     return render(request, "tracks.html", {"tracks": tracks_html, "page": page, "search": search})
 
 def umap_view(request):
-    print(settings.UMAP.head())
-    
     figure = px.scatter_3d(settings.UMAP[["x", "y", "z"]], x="x", y="y", z="z", color=numpy.linspace(0, 1, settings.UMAP.shape[0]))
 
     figure.update_layout(
