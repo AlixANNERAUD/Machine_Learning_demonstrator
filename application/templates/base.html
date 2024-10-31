@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>{% block title %}{% endblock %}</title>
+  <head>
+    <title>
+      {% block title %}
+      {% endblock %}
+    </title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names={% block icon_names %}{% endblock %}" />
     <script type="importmap">
       {
         "imports": {
@@ -15,8 +19,51 @@
       import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
       document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
     </script>
-</head>
-<body>
-    {% block content %}{% endblock %}
-</body>
+  </head>
+  <body>
+    <md-tabs aria-label="Home">
+      <md-primary-tab aria-controls="tracks-panel" onclick="window.location.href = '/tracks'" {% if request.path == '/tracks/'%}active{% endif %}>
+        <md-icon slot="icon">queue_music</md-icon>Tracks
+      </md-primary-tab>
+      <md-primary-tab aria-controls="umap-panel" onclick="window.location.href = '/umap'" {% if request.path == '/umap/' %}active{% endif %}>
+        <md-icon slot="icon">scatter_plot</md-icon>UMAP
+      </md-primary-tab>
+    </md-tabs>
+
+    <div id="content-container">
+      {% block content %}
+      {% endblock %}
+    </div>
+
+    <footer>
+        <section>
+        <md-divider></md-divider>
+        <p class="md-typescale-body-medium"><a href="https://alix.anneraud.fr ">Alix ANNERAUD</a> - Josselin DULONGCOURTY - Mathis SAUNIER</p>
+        </section>
+    </footer>
+
+    <style>
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f5f5f5;
+        }
+
+        footer p {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem;
+        }
+
+    </style>
+  </body>
 </html>

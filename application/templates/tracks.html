@@ -4,35 +4,76 @@
   Tracks
 {% endblock %}
 
-{% block content %}
-  <h1 class="md-typescale-display-medium">Tracks</h1>
+{% block icon_names %}chevron_left,chevron_right,first_page,last_page,queue_music,scatter_plot,search{% endblock %}
 
-  <p class="md-typescale-body-medium">Check out these controls in a form!</p>
+{% block content %}
+
+  <div class="pagination">
+      <md-outlined-text-field label="Search" id="search-field" value="{{ search }}">
+      </md-outlined-text-field>
+
+      <md-filled-button class="md-icon-button" aria-label="search" onclick="set_search()">
+        <md-icon>search</md-icon>
+      </md-filled-button>
+    
+
+        <md-filled-button onclick="set_page(1)" class="md-icon-button" aria-label="first page" {% if not page.has_previous %}disabled{% endif %}>
+          <md-icon>first_page</md-icon>
+        </md-filled-button>
+
+        <md-filled-button class="md-icon-button" aria-label="previous page" {% if not page.has_previous %}disabled{% else %} onclick="set_page({{ page.previous_page_number }})"{% endif %}>
+          <md-icon>chevron_left</md-icon>
+        </md-filled-button>
+    
+      <span>{{ page.number }}/{{ page.paginator.num_pages }}</span>
+
+       <md-filled-button  class="md-icon-button" aria-label="next page" {% if not page.has_next %}disabled{% else %}onclick="set_page({{ page.next_page_number }})"{% endif %}>
+          <md-icon>chevron_right</md-icon>
+        </md-filled-button>
+
+        <md-filled-button onclick="set_page({{ page.paginator.num_pages }})" class="md-icon-button" aria-label="last page" {% if not page.has_next %}disabled{% endif %}>
+          <md-icon>last_page</md-icon>
+        </md-filled-button>
+      
+  </div>
 
   <div>{{ tracks|safe }}</div>
 
-  <div class="pagination">
-    <span class="step-links">
-      {% if page.has_previous %}
-        <a href="?page=1">&laquo; first</a>
-        <a href="?page={{ page.previous_page_number }}">previous</a>
-      {% endif %}
-
-      <span class="current">Page {{ page.number }} of {{ page.paginator.num_pages }}.</span>
-
-      {% if page.has_next %}
-        <a href="?page={{ page.next_page_number }}">next</a>
-        <a href="?page={{ page.paginator.num_pages }}">last &raquo;</a>
-      {% endif %}
-    </span>
-  </div>
-
   <style>
-    form {
+    .pagination {
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem;
     }
   </style>
+
+  <script>
+    function set_search() {
+        let field = document.getElementById('search-field').value;
+
+        let parameters = new URLSearchParams(window.location.search);
+
+        if (field.value !== '') {
+          parameters.set('search', field);
+        } else {
+          parameters.delete('search');
+        }
+
+        window.location.href = '?' + parameters.toString();
+    }
+
+    function set_page(page) {
+        let parameters = new URLSearchParams(window.location.search);
+
+        if (page !== 1) {
+          parameters.set('page', page);
+        } else {
+          parameters.delete('page');
+        }
+
+        window.location.href = '?' + parameters.toString();
+    }
+  </script>
 {% endblock %}

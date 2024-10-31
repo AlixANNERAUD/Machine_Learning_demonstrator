@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  UMAP
+{% endblock %}
+
+{% block icon_names %}queue_music,scatter_plot{% endblock %}
+
+{% block content %}
+  {{ plot|safe }}
+{% endblock %}
