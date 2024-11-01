@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block content %}
+{% load static %}
+<link href={% static 'styles/tracks.css' %} rel="stylesheet" type="text/css" />
+
 
   <div class="pagination">
       <md-outlined-text-field label="Search" id="search-field" value="{{ search }}">
@@ -37,41 +40,5 @@
 
   <div>{{ tracks|safe }}</div>
 
-  <style>
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      margin: 1rem;
-    }
-  </style>
-
-  <script>
-    function set_search() {
-        let field = document.getElementById('search-field').value;
-
-        let parameters = new URLSearchParams(window.location.search);
-
-        if (field.value !== '') {
-          parameters.set('search', field);
-        } else {
-          parameters.delete('search');
-        }
-
-        window.location.href = '?' + parameters.toString();
-    }
-
-    function set_page(page) {
-        let parameters = new URLSearchParams(window.location.search);
-
-        if (page !== 1) {
-          parameters.set('page', page);
-        } else {
-          parameters.delete('page');
-        }
-
-        window.location.href = '?' + parameters.toString();
-    }
-  </script>
-{% endblock %}
+  <script src={% static 'js/tracks.js' %}></script>
+  {% endblock %}

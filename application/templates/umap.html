@@ -5,5 +5,10 @@
 {% endblock %}
 
 {% block content %}
+{% load static %}
+<link href={% static 'styles/umap.css' %} rel="stylesheet" type="text/css" />
+
   {{ plot|safe }}
+
+<script src={% static 'js/umap.js' %}></script>
 {% endblock %}
