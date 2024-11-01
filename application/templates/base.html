@@ -22,6 +22,9 @@
   </head>
   <body>
     <md-tabs aria-label="Home">
+      <md-primary-tab aria-controls="account-panel" onclick="window.location.href = '/account'" {% if request.path == '/account/' %}active{% endif %}>
+        <md-icon slot="icon">account_circle</md-icon>Account
+      </md-primary-tab>
       <md-primary-tab aria-controls="tracks-panel" onclick="window.location.href = '/tracks'" {% if request.path == '/tracks/'%}active{% endif %}>
         <md-icon slot="icon">queue_music</md-icon>Tracks
       </md-primary-tab>
@@ -30,7 +33,7 @@
       </md-primary-tab>
     </md-tabs>
 
-    <div id="content-container">
+    <div id="content-container" class="content-container">
       {% block content %}
       {% endblock %}
     </div>
@@ -43,6 +46,9 @@
     </footer>
 
     <style>
+        .content-container {
+            margin: 1rem;
+        }
 
         html, body {
             height: 100%;

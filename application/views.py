@@ -1,14 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.apps import apps
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import plotly.express as px
 import numpy
+import spotipy
 
 configuration = apps.get_app_config("application")
 
 
 # Create your views here.
+def home_view(request):
+    return redirect("Account")
+
 def tracks_view(request):
     search = request.GET.get("search", "")
 
@@ -52,3 +56,55 @@ def umap_view(request):
     )
 
     return render(request, "umap.html", {"plot": plot_html})
+
+def get_spotify_authenticator(request):
+    cache_handler = spotipy.cache_handler.DjangoSessionCacheHandler(request)
+
+    spotify_authenticator = spotipy.oauth2.SpotifyOAuth(
+        client_id=configuration.spotify_client_id,
+        client_secret=configuration.spotify_client_secret,
+        redirect_uri=f"http://{request.get_host()}/spotify",
+        scope="user-library-read",
+        cache_handler=cache_handler,
+        open_browser=False,
+    )
+
+    return (cache_handler, spotify_authenticator)
+
+def get_spotify_client(request):
+    _, spotify_authenticator = get_spotify_authenticator(request)
+
+    return spotipy.Spotify(auth_manager=spotify_authenticator)
+
+def spotify_view(request):
+    cache_handler, spotify_authenticator = get_spotify_authenticator(request)
+
+    # If the code is in the request GET parameters, get the access token
+    if request.GET.get("code"):
+        spotify_authenticator.get_access_token(request.GET.get("code"))
+
+    # If the token is not valid, redirect to the Spotify login page
+    if not spotify_authenticator.validate_token(cache_handler.get_cached_token()):
+        authentication_url = spotify_authenticator.get_authorize_url()
+        return redirect(authentication_url)
+
+    spotify_client = spotipy.Spotify(auth_manager=spotify_authenticator)
+
+    return redirect("Account")
+
+
+def account_view(request):
+    spotify_client = get_spotify_client(request)
+
+    # If the user data is not in the session, get it from the Spotify API
+    if request.session.get("user_data") is None:
+        request.session["user_data"] = spotify_client.me()
+
+    # If the playlists are not in the session, get them from the Spotify API
+    if request.session.get("playlists") is None:
+        request.session["playlists"] = spotify_client.current_user_playlists(limit=100)
+
+    user_data = request.session["user_data"]
+    playlists = request.session["playlists"]
+
+    return render(request, "account.html", {"user_data": user_data, "playlists": playlists["items"]})

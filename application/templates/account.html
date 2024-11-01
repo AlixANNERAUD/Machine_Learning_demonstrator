@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Account
+{% endblock %}
+
+{% block icon_names %}
+
+{% endblock %}
+
+{% block content %}
+  <h1 class="md-typescale-title-large">Hello, {{ user_data.display_name }} (aka <a href="{{ user_data.external_urls.spotify }}">{{ user_data.id }}</a>)!</h1>
+
+  <md-filled-button onclick="clear_storage()">Logout</md-filled-button>
+
+  <md-filled-button onclick="refresh()">Refresh</md-filled-button>
+
+  <p class="md-typescale-body-medium">You have {{ user_data.followers.total }} followers on Spotify.</p>
+
+  <p class="md-typescale-body-medium">Here are your {{ playlists|length }} playlists:</p>
+
+
+
+  <md-list class="playlist-list">
+    {% for playlist in playlists %}
+      <md-list-item type="link" href="{{ playlist.external_urls.spotify }}" target="_blank">
+        {% if playlist.images %}
+          <img slot="start" src="{{ playlist.images.0.url }}" alt="{{ playlist.name }}" style="width: 40px; height: 40px;" />
+        {% endif %}
+
+        <div slot="headline">{{ playlist.name }}</div>
+        <div slot="supporting-text">{{ playlist.description }}</div>
+        <md-icon slot="end">open_in_new</md-icon>
+      </md-list-item>
+    {% endfor %}
+  </md-list>
+
+  <style>
+    .playlist-list {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: column;
+      overflow-y: auto;
+      max-height: 70vh;
+    }
+    
+    .playlist-list md-list-item {
+      flex: 1 1 100%;
+      max-width: 20rem;
+    }
+  </style>
+
+  <script>
+    function refresh() {
+      localStorage.removeItem('user_data')
+      localStorage.removeItem('playlists')
+      window.location.reload()
+    }
+    
+    function clear_storage() {
+      localStorage.clear()
+      window.location.reload()
+    }
+  </script>
+{% endblock %}
