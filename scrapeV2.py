@@ -5,7 +5,7 @@ import time
 
 from spotipy.exceptions import SpotifyException
 
-from core import scrap
+from modules import scrap
 
 # Load API keys from environment variables
 sp = scrap.load_spotify_client()
