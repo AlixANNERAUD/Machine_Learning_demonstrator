@@ -13,6 +13,7 @@ configuration = apps.get_app_config("application")
 def home_view(request):
     return redirect("Account")
 
+
 def tracks_view(request):
     search = request.GET.get("search", "")
 
@@ -57,6 +58,7 @@ def umap_view(request):
 
     return render(request, "umap.html", {"plot": plot_html})
 
+
 def get_spotify_authenticator(request):
     cache_handler = spotipy.cache_handler.DjangoSessionCacheHandler(request)
 
@@ -66,15 +68,18 @@ def get_spotify_authenticator(request):
         redirect_uri=f"http://{request.get_host()}/spotify",
         scope="user-library-read",
         cache_handler=cache_handler,
+        show_dialog=True,
         open_browser=False,
     )
 
     return (cache_handler, spotify_authenticator)
 
+
 def get_spotify_client(request):
     _, spotify_authenticator = get_spotify_authenticator(request)
 
     return spotipy.Spotify(auth_manager=spotify_authenticator)
+
 
 def spotify_view(request):
     cache_handler, spotify_authenticator = get_spotify_authenticator(request)
@@ -94,6 +99,11 @@ def spotify_view(request):
 
 
 def account_view(request):
+    cache_handler, spotify_authenticator = get_spotify_authenticator(request)
+
+    if not spotify_authenticator.validate_token(cache_handler.get_cached_token()):
+        return redirect("Spotify")
+
     spotify_client = get_spotify_client(request)
 
     # If the user data is not in the session, get it from the Spotify API
@@ -107,4 +117,8 @@ def account_view(request):
     user_data = request.session["user_data"]
     playlists = request.session["playlists"]
 
-    return render(request, "account.html", {"user_data": user_data, "playlists": playlists["items"]})
+    return render(
+        request,
+        "account.html",
+        {"user_data": user_data, "playlists": playlists["items"]},
+    )
