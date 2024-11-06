@@ -84,7 +84,7 @@ def get_nearest_tracks(tracks_scaled, track_id, n=5, artists=False):
     return closest_tracks[["track_name", "track_id"]]
 
 
-track_id = "36xBFaVGjqm7le8CTHytUj"  # Bring me the horizon - Parasite Eve
+track_id = "2VxeLyX666F8uXCJ0dZF8B"  # Lady Gaga - Shallow
 print(get_nearest_tracks(tracks_scaled, track_id, 5, artists=True))
 
 
@@ -94,9 +94,15 @@ from sklearn.decomposition import PCA
 pca = PCA(n_components=2)
 tracks_pca = pca.fit_transform(tracks_scaled)
 
-
 # All tracks
-plt.scatter(tracks_pca[:, 0], tracks_pca[:, 1], c=tracks["timestamp"], alpha=0.5, s=2)
+plt.scatter(
+    tracks_pca[:, 0],
+    tracks_pca[:, 1],
+    c=tracks["timestamp"],
+    alpha=0.5,
+    s=2,
+)
+plt.colorbar()
 
 # Closest tracks
 closest_tracks = get_nearest_tracks(tracks_scaled, track_id, 5)
@@ -120,6 +126,4 @@ plt.scatter(track_pca[0], track_pca[1], c="black", s=5, label="Selected track")
 plt.xlabel("PCA 1")
 plt.ylabel("PCA 2")
 plt.title("PCA of tracks")
-
-plt.colorbar()
 plt.show()
