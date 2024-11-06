@@ -78,3 +78,34 @@ def get_nearest_tracks(tracks_scaled, track_id, n=5):
 
 track_id = "4vO24keemHgi3JoCLIQAq9"
 print(get_nearest_tracks(tracks_scaled, track_id, 5))
+
+
+# PCA
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=2)
+tracks_pca = pca.fit_transform(tracks_scaled)
+
+# Plot the PCA, color by year
+import matplotlib.pyplot as plt
+
+plt.scatter(tracks_pca[:, 0], tracks_pca[:, 1], c=tracks["timestamp"], alpha=0.5, s=2)
+# Get the ids of the 5 closest tracks
+closest_tracks = get_nearest_tracks(tracks_scaled, track_id, 5)
+closest_tracks_pca = pca.transform(
+    tracks_scaled[np.where(raw_tracks["track_id"].isin(closest_tracks["track_id"]))]
+)
+plt.scatter(
+    closest_tracks_pca[:, 0],
+    closest_tracks_pca[:, 1],
+    c="red",
+    alpha=0.5,
+    s=2,
+    label="Closest tracks",
+)
+plt.xlabel("PCA 1")
+plt.ylabel("PCA 2")
+plt.title("PCA of tracks")
+
+plt.colorbar()
+plt.show()
