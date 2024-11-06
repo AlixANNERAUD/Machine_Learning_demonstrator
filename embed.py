@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 
 file_path = "./tracks.csv"
@@ -44,11 +46,10 @@ tracks = tracks.dropna()
 tracks = tracks[tracks["track_duration_ms"] > 0]  # Some tracks have a duration of 0
 tracks = tracks[tracks["timestamp"] > 0]  # Some tracks have 0000 as date
 
-# For now, we will drop categorical features
 tracks = tracks.drop(
     columns=[
-        "release_date",  # We have the timestamp
-        "release_date_precision",  # We have the timestamp
+        "release_date",  # timestamp
+        "release_date_precision",  # timestamp
         "mode",
         "time_signature",
         "track_explicit",
@@ -64,7 +65,7 @@ scaler = StandardScaler()
 tracks_scaled = scaler.fit_transform(tracks)
 
 
-def get_nearest_tracks(tracks_scaled, track_id, n=5):
+def get_nearest_tracks(tracks_scaled, track_id, n=5, artists=False):
     track_index = np.where(raw_tracks["track_id"] == track_id)[0][0]
     track = tracks_scaled[track_index]
 
@@ -73,24 +74,31 @@ def get_nearest_tracks(tracks_scaled, track_id, n=5):
     # 5 closest tracks excluding the track itself (index 0)
     closest_tracks = raw_tracks.iloc[np.argsort(distances)[1 : n + 1]]
 
+    if artists:
+        closest_tracks.loc[:, "artists"] = closest_tracks.loc[:, "artists"].apply(
+            lambda artists: json.loads(artists.replace("'", '"'))[0]["artist_name"]
+        )
+
+        return closest_tracks[["track_name", "track_id", "artists"]]
+
     return closest_tracks[["track_name", "track_id"]]
 
 
-track_id = "4vO24keemHgi3JoCLIQAq9"
-print(get_nearest_tracks(tracks_scaled, track_id, 5))
+track_id = "36xBFaVGjqm7le8CTHytUj"  # Bring me the horizon - Parasite Eve
+print(get_nearest_tracks(tracks_scaled, track_id, 5, artists=True))
 
 
-# PCA
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 pca = PCA(n_components=2)
 tracks_pca = pca.fit_transform(tracks_scaled)
 
-# Plot the PCA, color by year
-import matplotlib.pyplot as plt
 
+# All tracks
 plt.scatter(tracks_pca[:, 0], tracks_pca[:, 1], c=tracks["timestamp"], alpha=0.5, s=2)
-# Get the ids of the 5 closest tracks
+
+# Closest tracks
 closest_tracks = get_nearest_tracks(tracks_scaled, track_id, 5)
 closest_tracks_pca = pca.transform(
     tracks_scaled[np.where(raw_tracks["track_id"].isin(closest_tracks["track_id"]))]
@@ -103,7 +111,8 @@ plt.scatter(
     s=2,
     label="Closest tracks",
 )
-# Plot the selected track in black
+
+# Selected track
 track_index = np.where(raw_tracks["track_id"] == track_id)[0][0]
 track_pca = tracks_pca[track_index]
 plt.scatter(track_pca[0], track_pca[1], c="black", s=5, label="Selected track")
