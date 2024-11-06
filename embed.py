@@ -103,6 +103,11 @@ plt.scatter(
     s=2,
     label="Closest tracks",
 )
+# Plot the selected track in black
+track_index = np.where(raw_tracks["track_id"] == track_id)[0][0]
+track_pca = tracks_pca[track_index]
+plt.scatter(track_pca[0], track_pca[1], c="black", s=5, label="Selected track")
+
 plt.xlabel("PCA 1")
 plt.ylabel("PCA 2")
 plt.title("PCA of tracks")
