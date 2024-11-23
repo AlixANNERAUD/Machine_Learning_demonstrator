@@ -169,3 +169,7 @@ cython_debug/
 *.hdf
 
 /static/
+
+*.wav
+*embedding*.npy
+processed_ids*.txt
