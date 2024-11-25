@@ -5,7 +5,7 @@ import numpy as np
 from modules.conversions import get_artist_string
 
 datasetname = "tracks.csv"
-filename = "embeddings.npy"
+filename = "embeddings_330.npy"
 filename_id = f"id_{filename}"
 
 # Load the dataset and print the shape
@@ -15,16 +15,21 @@ embeddings = np.load(filename)
 id_embeddings = np.load(filename_id)
 
 print(f"Embeddings shape: {embeddings.shape}")
-
+# Shape (N, 768) where N is the number of embeddings
+# exit()
 
 """
 We want to find the K nearest neighbors of a given embedding (by id).
 """
 
 # Define the embedding and the number of neighbors
-target_id = "5XeFesFbtLpXzIVDNQP22n"
+target_id = "7oaEjLP2dTJLJsITbAxTOz"
 
-embedding = embeddings[np.where(id_embeddings == target_id)[0][0]]
+idx = np.where(id_embeddings == target_id)
+if len(idx[0]) == 0:
+    print(f"[Warning] ID {target_id} not found in the dataset.")
+    exit()
+embedding = embeddings[idx[0][0]]
 K = 5
 
 # # Compute the cosine similarity between the embedding and all the embeddings
@@ -81,6 +86,15 @@ explained_variance_ratio = pca.explained_variance_ratio_
 cumulative_variance_ratio = np.cumsum(explained_variance_ratio)
 n_components = np.argmax(cumulative_variance_ratio > 0.99) + 1
 
+# import matplotlib.pyplot as plt
+
+# plt.plot(cumulative_variance_ratio)
+# plt.axvline(n_components, color="red", linestyle="--")
+# plt.xlabel("Number of components")
+# plt.ylabel("Cumulative explained variance")
+# plt.title("PCA explained variance")
+# plt.show()
+# print(f"Number of components: {n_components}")
 
 # Compute the cosine similarity between the PCA embedding and all the PCA embeddings
 cosine_similarities_pca = np.dot(pca_embeddings, pca_embedding) / (
