@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css" />
+
+    <link href="{% static 'styles/styles.css' %}" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="columns">
+      <div class="column is-narrow">
+        <section class="section is-small">
+          <aside class="menu">
+            <p class="menu-label">
+              <i class="fa-solid fa-user"></i> Account
+            </p>
+            <ul class="menu-list">
+              <li>
+                <a>Details</a>
+              </li>
+            </ul>
+            <p class="menu-label">
+              <i class="fa-solid fa-database"></i> Data
+            </p>
+            <ul class="menu-list">
+              <li>
+                <a><i class="fa-solid fa-list"></i> List</a>
+              </li>
+              <li>
+                <a><i class="fa-solid fa-chart-area"></i> Plot</a>
+              </li>
+            </ul>
+            <p class="menu-label">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              Composition
+            </p>
+            <ul class="menu-list">
+              <li>
+                <a>From playlist</a>
+              </li>
+            </ul>
+          </aside>
+        </section>
+      </div>
+
+      <div class="column">
+        <div id="main-content"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="error-modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            <i class="fa-solid fa-exclamation-triangle"></i> Something went wrong ...
+          </p>
+          <button class="delete" aria-label="close" onclick="close_error_modal()"></button>
+        </header>
+        <section class="modal-card-body" id="error-modal-content"></section>
+      </div>
+    </div>
+
+    <script src="{% static 'js/application.js' %}"></script>
+  </body>
+</html>

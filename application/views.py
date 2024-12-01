@@ -11,7 +11,7 @@ configuration = apps.get_app_config("application")
 
 # Create your views here.
 def home_view(request):
-    return redirect("Account")
+    return render(request, "application.html")
 
 
 def tracks_view(request):
@@ -32,10 +32,10 @@ def tracks_view(request):
 
     page = paginator.get_page(page_number)
 
-    tracks_html = page.object_list.to_html()
+    tracks = page.object_list[["release_date", "track_name", "artists", "track_duration_ms"]]
 
     return render(
-        request, "tracks.html", {"tracks": tracks_html, "page": page, "search": search}
+        request, "tracks.html", {"tracks": tracks, "page": page, "search": search, "total_tracks": paginator.count}
     )
 
 

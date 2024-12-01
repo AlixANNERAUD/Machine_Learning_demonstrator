@@ -1,44 +1,88 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
-  Tracks
+  <i class="fa-solid fa-list"></i>
+  Tracks list
+{% endblock %}
+
+{% block subtitle %}
+  There are {{ total_tracks }} tracks in the database.
 {% endblock %}
 
 {% block content %}
-{% load static %}
-<link href={% static 'styles/tracks.css' %} rel="stylesheet" type="text/css" />
+  <nav class="level">
+    <div class="level-left">
+      <nav class="pagination" role="navigation" aria-label="pagination">
+        <a href="#" class="pagination-previous">Previous</a>
+        <a href="#" class="pagination-next">Next page</a>
+        <ul class="pagination-list">
+          {% if page.has_previous %}
+            <li>
+              <a href="#" class="pagination-link" aria-label="Goto page 1">1</a>
+            </li>
+            <li>
+              <span class="pagination-ellipsis">&hellip;</span>
+            </li>
+            <li>
+              <a href="#" class="pagination-link" aria-label="Goto page {{ page.previous_page_number }}">{{ page.previous_page_number }}</a>
+            </li>
+          {% endif %}
 
+          <li>
+            <a class="pagination-link is-current" aria-label="Page {{ page.number }}
+          " aria-current="page">{{ page.number }}</a>
+          </li>
 
-  <div class="pagination">
-      <md-outlined-text-field label="Search" id="search-field" value="{{ search }}">
-      </md-outlined-text-field>
+          {% if page.has_next %}
+            <li>
+              <a href="#" class="pagination-link" aria-label="Goto page {{ page.next_page_number }}">{{ page.next_page_number }}</a>
+            </li>
 
-      <md-filled-button class="md-icon-button" aria-label="search" onclick="set_search()">
-        <md-icon>search</md-icon>
-      </md-filled-button>
-    
+            <li>
+              <span class="pagination-ellipsis">&hellip;</span>
+            </li>
+            <li>
+              <a href="#" class="pagination-link" aria-label="Goto page {{ page.paginator.num_pages }}">{{ page.paginator.num_pages }}</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
 
-        <md-filled-button onclick="set_page(1)" class="md-icon-button" aria-label="first page" {% if not page.has_previous %}disabled{% endif %}>
-          <md-icon>first_page</md-icon>
-        </md-filled-button>
+    <div class="level-item">
+      <div class="field has-addons">
+        <p class="control">
+          <input class="input" type="text" placeholder="Find a track" />
+        </p>
+        <p class="control">
+          <button class="button">Search</button>
+        </p>
+      </div>
+    </div>
+  </nav>
 
-        <md-filled-button class="md-icon-button" aria-label="previous page" {% if not page.has_previous %}disabled{% else %} onclick="set_page({{ page.previous_page_number }})"{% endif %}>
-          <md-icon>chevron_left</md-icon>
-        </md-filled-button>
-    
-      <span>{{ page.number }}/{{ page.paginator.num_pages }}</span>
-
-       <md-filled-button  class="md-icon-button" aria-label="next page" {% if not page.has_next %}disabled{% else %}onclick="set_page({{ page.next_page_number }})"{% endif %}>
-          <md-icon>chevron_right</md-icon>
-        </md-filled-button>
-
-        <md-filled-button onclick="set_page({{ page.paginator.num_pages }})" class="md-icon-button" aria-label="last page" {% if not page.has_next %}disabled{% endif %}>
-          <md-icon>last_page</md-icon>
-        </md-filled-button>
-      
-  </div>
-
-  <div>{{ tracks|safe }}</div>
-
-  <script src={% static 'js/tracks.js' %}></script>
-  {% endblock %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>
+          <abbr title="Position">#</abbr>
+        </th>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Artists</th>
+        <th>Durations</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for index, column in tracks.iterrows %}
+        <tr>
+          <td>{{ index }}</td>
+          {% for value in column %}
+            <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

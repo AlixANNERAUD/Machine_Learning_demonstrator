@@ -1,56 +1,29 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>
-      {% block title %}
-      {% endblock %}
-    </title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    
-    <link href={% static 'styles/base.css' %} rel="stylesheet" type="text/css" />
-    
-    
-    <script type="importmap">
-      {
-        "imports": {
-          "@material/web/": "https://esm.run/@material/web/"
-        }
-      }
-    </script>
-    <script type="module">
-      import '@material/web/all.js';
-      import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
-      document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
-    </script>
-  </head>
-  <body>
-    <md-tabs aria-label="Home">
-      <md-primary-tab aria-controls="account-panel" onclick="window.location.href = '/account'" {% if request.path == '/account/' %}active{% endif %}>
-        <md-icon slot="icon">account_circle</md-icon>Account
-      </md-primary-tab>
-      <md-primary-tab aria-controls="tracks-panel" onclick="window.location.href = '/tracks'" {% if request.path == '/tracks/'%}active{% endif %}>
-        <md-icon slot="icon">queue_music</md-icon>Tracks
-      </md-primary-tab>
-      <md-primary-tab aria-controls="umap-panel" onclick="window.location.href = '/umap'" {% if request.path == '/umap/' %}active{% endif %}>
-        <md-icon slot="icon">scatter_plot</md-icon>UMAP
-      </md-primary-tab>
-    </md-tabs>
-
-    <div id="content-container" class="content-container">
+<div class="hero is-fullheight">
+  <div class="hero-head has-text-centered">
+    <section class="section is-small">
+      <p class="title" id="main-title">
+        {% block title %}
+        {% endblock %}
+      </p>
+      <p class="subtitle" id="main-subtitle">
+        {% block subtitle %}
+        {% endblock %}
+      </p>
+    </section>
+  </div>
+  <div class="hero-body">
+    <div class="container" id="main-content">
       {% block content %}
       {% endblock %}
     </div>
+  </div>
 
-    <footer>
-        <section>
-        <md-divider></md-divider>
-        <p class="md-typescale-body-medium"><a href="https://alix.anneraud.fr ">Alix ANNERAUD</a> - Josselin DULONGCOURTY - Mathis SAUNIER</p>
-        </section>
-    </footer>
-
-    <script src={% static 'js/base.js' %}></script>
-  </body>
-</html>
+  <div class="hero-foot">
+    <div class="section has-text-centered is-small">
+      <p>
+        <a href="https://alix.anneraud.fr">Alix ANNERAUD</a>
+        - Josselin DULONGCOURTY - Mathis SAUNIER
+      </p>
+    </div>
+  </div>
+</div>
