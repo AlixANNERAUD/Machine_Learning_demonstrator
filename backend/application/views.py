@@ -5,6 +5,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import plotly.express as px
 import numpy
 import spotipy
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
 
 configuration = apps.get_app_config("application")
 
@@ -14,6 +17,7 @@ def home_view(request):
     return render(request, "application.html")
 
 
+@api_view(["GET"])
 def tracks_view(request):
     search = request.GET.get("search", "")
 
@@ -32,13 +36,23 @@ def tracks_view(request):
 
     page = paginator.get_page(page_number)
 
-    tracks = page.object_list[["release_date", "track_name", "artists", "track_duration_ms"]]
+    total_pages = paginator.num_pages
+    current_page = page_number
 
-    return render(
-        request, "tracks.html", {"tracks": tracks, "page": page, "search": search, "total_tracks": paginator.count}
+    tracks = page.object_list[
+        ["release_date", "track_name", "artists", "track_duration_ms"]
+    ]
+
+    return JsonResponse(
+        {
+            "tracks": tracks.to_dict(orient="records", index=True),
+            "total_pages": total_pages,
+            "current_page": current_page,
+        }
     )
 
 
+@api_view(["GET"])
 def umap_view(request):
     figure = px.scatter_3d(
         configuration.umap[["x", "y", "z"]],
@@ -52,27 +66,13 @@ def umap_view(request):
         margin=dict(l=0, r=0, t=0, b=0),
     )
 
-    plot_html = figure.to_html(
-        full_html=False, default_height="100%", default_width="100%"
-    )
+    data = {
+        "x": configuration.umap["x"].to_list(),
+        "y": configuration.umap["y"].to_list(),
+        "z": configuration.umap["z"].to_list(),
+    }
 
-    return render(request, "umap.html", {"plot": plot_html})
-
-
-def get_spotify_authenticator(request):
-    cache_handler = spotipy.cache_handler.DjangoSessionCacheHandler(request)
-
-    spotify_authenticator = spotipy.oauth2.SpotifyOAuth(
-        client_id=configuration.spotify_client_id,
-        client_secret=configuration.spotify_client_secret,
-        redirect_uri=f"http://{request.get_host()}/spotify",
-        scope="user-library-read",
-        cache_handler=cache_handler,
-        show_dialog=True,
-        open_browser=False,
-    )
-
-    return (cache_handler, spotify_authenticator)
+    return JsonResponse(data)
 
 
 def get_spotify_client(request):
@@ -82,7 +82,14 @@ def get_spotify_client(request):
 
 
 def spotify_view(request):
-    cache_handler, spotify_authenticator = get_spotify_authenticator(request)
+
+    redirect_uri = request.GET.get(
+        "redirect_uri", request.build_absolute_uri("/spotify/")
+    )
+
+    cache_handler, spotify_authenticator = get_spotify_authenticator(
+        request, redirect_uri
+    )
 
     # If the code is in the request GET parameters, get the access token
     if request.GET.get("code"):
@@ -95,7 +102,28 @@ def spotify_view(request):
 
     spotify_client = spotipy.Spotify(auth_manager=spotify_authenticator)
 
-    return redirect("Account")
+    return redirect("/")
+
+
+@api_view(["GET"])
+def me(request):
+    cache_handler, spotify_authenticator = get_spotify_authenticator(request)
+
+    if not spotify_authenticator.validate_token(cache_handler.get_cached_token()):
+        return
+
+    spotify_client = get_spotify_client(request)
+
+    return JsonResponse(spotify_client.me())
+
+
+def authenticate(request):
+    cache_handler, spotify_authenticator = get_spotify_authenticator(request)
+
+    if not spotify_authenticator.validate_token(cache_handler.get_cached_token()):
+        return redirect("Spotify")
+
+    return redirect("/")
 
 
 def account_view(request):
@@ -117,8 +145,14 @@ def account_view(request):
     user_data = request.session["user_data"]
     playlists = request.session["playlists"]
 
-    return render(
-        request,
-        "account.html",
-        {"user_data": user_data, "playlists": playlists["items"]},
+    return JsonResponse(
+        {
+            "user_data": user_data,
+            "playlists": playlists,
+        }
     )
+
+
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({"detail": "CSRF cookie set"})
