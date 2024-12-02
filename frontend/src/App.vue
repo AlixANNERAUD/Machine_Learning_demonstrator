@@ -53,6 +53,14 @@
                 >
               </router-link>
             </li>
+            <li>
+              <router-link to="/pca" custom v-slot="{ href, navigate, isActive }">
+                <a :class="{ 'is-active': isActive }" :href="href" @click="navigate">
+                  <FontAwesomeIcon :icon="fas.faChartLine" />
+                  PCA</a
+                >
+              </router-link>
+            </li>
           </ul>
           <p class="menu-label">
             <FontAwesomeIcon :icon="fas.faWandMagicSparkles" />
@@ -60,7 +68,20 @@
           </p>
           <ul class="menu-list">
             <li>
-              <a>From playlist</a>
+              <router-link to="/search" custom v-slot="{ href, navigate, isActive }">
+                <a :class="{ 'is-active': isActive }" :href="href" @click="navigate">
+                  <FontAwesomeIcon :icon="fas.faSearch" />
+                  Search</a
+                >
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/compose" custom v-slot="{ href, navigate, isActive }">
+                <a :class="{ 'is-active': isActive }" :href="href" @click="navigate">
+                  <FontAwesomeIcon :icon="fas.faWandMagicSparkles" />
+                  Compose</a
+                >
+              </router-link>
             </li>
           </ul>
         </aside>

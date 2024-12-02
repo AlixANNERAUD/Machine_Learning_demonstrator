@@ -88,7 +88,7 @@
               <span v-if="index < track.artists.length - 1">, </span>
             </span>
           </td>
-          <td>{{ track.track_duration_ms }}</td>
+          <td>{{ formatTime(track.track_duration_ms) }}</td>
         </tr>
       </tbody>
     </table>
@@ -129,6 +129,12 @@ const current_page = ref<number>(1)
 const search = ref<string>('')
 
 watch(() => route.params.id, fetch_data, { immediate: true })
+
+function formatTime(ms: number) {
+  const minutes = Math.floor(ms / 60000)
+  const seconds = ((ms % 60000) / 1000).toFixed(0)
+  return `${minutes}:${parseInt(seconds) < 10 ? '0' : ''}${seconds}`
+}
 
 async function fetch_data() {
   try {

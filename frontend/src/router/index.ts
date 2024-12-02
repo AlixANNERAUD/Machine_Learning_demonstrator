@@ -3,6 +3,9 @@ import DashboardView from '@/views/DashboardView.vue'
 import AccountView from '@/views/AccountView.vue'
 import TracksView from '@/views/TracksView.vue'
 import UMAPView from '@/views/UMAPView.vue'
+import PCAView from '@/views/PCAView.vue'
+import SearchView from '@/views/SearchView.vue'
+import ComposeView from '@/views/ComposeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +32,22 @@ const router = createRouter({
       path: '/umap',
       name: 'UMAP',
       component: UMAPView,
+    },
+    {
+      path: '/pca',
+      name: 'PCA',
+      component: PCAView,
+    },
+    {
+      path: '/compose/:track?',
+      name: 'Compose',
+      component: ComposeView,
+      props: true,
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: SearchView,
     },
   ],
 })

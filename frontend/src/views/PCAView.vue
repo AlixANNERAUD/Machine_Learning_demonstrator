@@ -1,5 +1,5 @@
 <template>
-  <HeroComponent title="UMAP" subtitle="UMAP visualization">
+  <HeroComponent title="PCA" subtitle="PCA visualization">
     <div id="plot" class="plot-container"></div>
   </HeroComponent>
 </template>
@@ -32,7 +32,7 @@ async function fetch_data() {
   try {
     console.log('fetching data')
 
-    const response = await axiosInstance.get('/umap')
+    const response = await axiosInstance.get('/pca')
 
     console.log("label", response.data.labels)
 
