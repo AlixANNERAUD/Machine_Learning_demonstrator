@@ -1,12 +1,13 @@
 from django.urls import path
 
-from . import views
+from .views.umap import umap_view
+from .views.tracks import tracks_view
+from .views.pca import pca_view
+from .views.compose import compose_view
 
 urlpatterns = [
-    path("", views.home_view, name="Home"),
-    path("spotify/", views.spotify_view, name="Spotify"),
-    path("tracks/", views.tracks_view, name="Tracks"),
-    path("umap/", views.umap_view, name="UMAP"),
-    path("account/", views.account_view, name="Account"),
-    path("me/", views.me, name="Me"),
+    path("tracks/", tracks_view, name="Tracks"),
+    path("umap/", umap_view, name="UMAP"),
+    path("pca/", pca_view, name="PCA"),
+    path("compose/", compose_view, name="Compose"),
 ]
