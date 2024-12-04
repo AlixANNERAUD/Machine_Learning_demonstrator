@@ -20,7 +20,9 @@
             </div>
             <div class="media-content">
               <p class="title is-4">
-                <a href="#">{{ track.name }}</a>
+                <a :href="track.external_urls.spotify" target="_blank" rel="noopener noreferrer">{{
+                  track.name
+                }}</a>
               </p>
               <p class="subtitle is-6">{{ track.artists[0].name }} - {{ track.album.name }}</p>
             </div>
@@ -28,10 +30,10 @@
           <div class="content"></div>
           <br />
           <nav class="level is-mobile">
-            <div class="level-left">
-              <router-link :to="{ name: 'Compose', params: { track: track.id } }">
+            <div v-if="track.preview_url" class="level-left">
+              <router-link :to="{ name: 'Compose', params: { track_id: track.id } }">
                 <span class="icon is-small">
-                  <FontAwesomeIcon :icon="fas.faMagic" />
+                  <FontAwesomeIcon :icon="fas.faWandMagicSparkles" />
                 </span>
               </router-link>
               <a class="level-item"> </a>
@@ -58,7 +60,9 @@ const tracks = ref<Track[]>([])
 async function fetch_data() {
   const spotify = await get_spotify()
 
-  const result = await spotify.search(search.value, ['track'], undefined, 10)
+  const result = await spotify.search(search.value, ['track'], 'US', 10)
+
+  console.log('result', result)
 
   tracks.value = result.tracks.items
 }

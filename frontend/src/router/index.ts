@@ -39,7 +39,7 @@ const router = createRouter({
       component: PCAView,
     },
     {
-      path: '/compose/:track?',
+      path: '/compose/:track_id?',
       name: 'Compose',
       component: ComposeView,
       props: true,
