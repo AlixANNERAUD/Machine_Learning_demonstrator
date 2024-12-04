@@ -4,18 +4,20 @@ import pandas
 import logging
 from django.http import JsonResponse
 
-from . import tracks
+from . import data
 
-configuration = apps.get_app_config("application")
+CONFIGURATION = apps.get_app_config("application")
+PCA_PATH = f"{CONFIGURATION.data_path}/pca.hdf"
 
-
-def load_pca(tracks, path):
+def load_pca(path):
     logging.info("Loading PCA ...")
 
+    embeddings = data.get_embeddings()
     try:
         pca = pandas.read_hdf(path, key="pca")
 
-        if pca.shape[0] != tracks.shape[0]:
+
+        if pca.shape[0] != embeddings.shape[0]:
             logging.info("PCA shape does not match, regenerating ...")
             raise FileNotFoundError
 
@@ -25,13 +27,11 @@ def load_pca(tracks, path):
 
         from sklearn.decomposition import PCA
 
-        numeric_columns = tracks.select_dtypes(include=["float64", "int64"]).dropna(
-            axis=0
-        )
+        embeddings = data.get_embeddings()
 
         pca_model = PCA(n_components=3)
 
-        pca = pca_model.fit_transform(numeric_columns)
+        pca = pca_model.fit_transform(embeddings)
 
         pca = pandas.DataFrame(pca, columns=["x", "y", "z"])
 
@@ -48,7 +48,7 @@ def get_pca():
     global PCA
 
     if PCA is None:
-        PCA = load_pca(tracks.get_tracks(), f"{configuration.data_path}/pca.hdf")
+        PCA = load_pca(PCA_PATH)
 
     return PCA
 
@@ -58,11 +58,11 @@ PCA = None
 def pca_view(request):
     pca = get_pca()
 
-    data = {
+    plot_data = {
         "x": pca["x"].to_list(),
         "y": pca["y"].to_list(),
         "z": pca["z"].to_list(),
-        "labels": tracks.get_tracks()["track_name"].to_list(),
+        "labels": data.get_metadata()["track_name"].to_list(),
     }
 
-    return JsonResponse(data)
+    return JsonResponse(plot_data)

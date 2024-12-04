@@ -4,18 +4,20 @@ import pandas
 import logging
 from django.http import JsonResponse
 
-from . import tracks
+from . import data
 
-configuration = apps.get_app_config("application")
+CONFIGURATION = apps.get_app_config("application")
+UMAP_PATH = f"{CONFIGURATION.data_path}/umap.hdf"
 
-
-def load_umap(tracks: pandas.DataFrame, path: str):
+def load_umap(path: str):
     logging.info("Loading UMAP ...")
+
+    embeddings = data.get_embeddings()
 
     try:
         umap = pandas.read_hdf(path, key="umap")
 
-        if umap.shape[0] != tracks.shape[0]:
+        if umap.shape[0] != embeddings.shape[0]:
             logging.info("UMAP shape does not match, regenerating ...")
             raise FileNotFoundError
 
@@ -25,15 +27,11 @@ def load_umap(tracks: pandas.DataFrame, path: str):
 
         import umap
 
-        numeric_columns = tracks.select_dtypes(include=["float64", "int64"]).dropna(
-            axis=0
-        )
-
         umap_model = umap.UMAP(
             n_components=3, n_neighbors=10, min_dist=0.1, metric="correlation"
         )
 
-        umap = umap_model.fit_transform(numeric_columns)
+        umap = umap_model.fit_transform(embeddings)
 
         umap = pandas.DataFrame(umap, columns=["x", "y", "z"])
 
@@ -50,7 +48,7 @@ def get_umap():
     global UMAP
 
     if UMAP is None:
-        UMAP = load_umap(tracks.get_tracks(), f"{configuration.data_path}/umap.hdf")
+        UMAP = load_umap(UMAP_PATH)
 
     return UMAP
 
@@ -60,11 +58,11 @@ UMAP = None
 def umap_view(request):
     umap = get_umap()
 
-    data = {
+    plot_data = {
         "x": umap["x"].to_list(),
         "y": umap["y"].to_list(),
         "z": umap["z"].to_list(),
-        "labels": tracks.get_tracks()["track_name"].to_list(),
+        "labels": data.get_metadata()["track_name"].to_list(),
     }
 
-    return JsonResponse(data)
+    return JsonResponse(plot_data)

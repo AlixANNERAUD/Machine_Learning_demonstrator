@@ -13,3 +13,6 @@ django-cors-headers==4.6.0
 djangorestframework==3.15.2
 torch==2.5.1
 transformers==4.46.3
+deezer-python==7.1.0
+librosa==0.10.2
+soundfile==0.12.1

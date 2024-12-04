@@ -11,6 +11,12 @@
       </p>
     </div>
 
+    <div class="grid is-col-min-15">
+      <div v-for="track in tracks" :key="track.id" class="cell">
+        <TrackCardComponent :track="track" />
+      </div>
+    </div>
+
     <div v-if="loading" class="skeleton-block"></div>
   </HeroComponent>
   <ErrorModalComponent v-if="error" :message="error" />
@@ -22,11 +28,12 @@ import HeroComponent from '@/components/HeroComponent.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import axiosInstance from '@/stores/axiosInstance'
-import get_spotify from '@/stores/spotifyInstance'
 import ErrorModalComponent from '@/components/ErrorModalComponent.vue'
+import TrackCardComponent from '@/components/TrackCardComponent.vue'
 
 const props = defineProps({
   track_id: String,
+  preview_url: String,
 })
 
 const loading = ref<boolean>(false)
@@ -39,25 +46,33 @@ const tracks = ref([])
 async function fetch_data() {
   loading.value = true
 
-  const spotify = await get_spotify()
+  // Clear the tracks
+  tracks.value = []
 
-  if (!track_id.value) {
-    loading.value = false
-    return
-  }
-
-  const track = await spotify.tracks.get(track_id.value)
-
-  console.log('preview_url', track.preview_url)
+  console.log('props.preview_url', props.preview_url)
 
   const result = axiosInstance.get('/compose', {
     params: {
       track_id: track_id.value,
-      preview_url: track.preview_url,
+      preview_url: props.preview_url,
     },
   })
 
-  tracks.value = (await result).data
+  const tracks_id = (await result).data.similar_tracks
+
+  for (const track_id of tracks_id) {
+    axiosInstance
+      .get(`/deezer/track`, {
+        params: {
+          track_id,
+        },
+      })
+      .then((result) => {
+        console.log('result', result.data)
+
+        tracks.value.push(result.data)
+      })
+  }
 
   loading.value = false
 }

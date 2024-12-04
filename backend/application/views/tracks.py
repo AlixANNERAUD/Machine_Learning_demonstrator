@@ -5,42 +5,22 @@ import pandas
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
+from . import data
+
 configuration = apps.get_app_config("application")
-
-tracks = None
-
-def get_tracks():
-    global tracks
-
-    if tracks is None:
-        tracks = load_tracks(f"{configuration.data_path}/tracks.csv")
-        print(tracks.info)
-
-    return tracks
-
-def load_tracks(path: str):
-    logging.info("Loading tracks ...")
-    try:
-        tracks = pandas.read_csv(path)
-        tracks.dropna(inplace=True)
-        return tracks
-    except FileNotFoundError:
-        logging.error("Tracks file not found")
-        raise FileNotFoundError
-    except Exception as e:
-        logging.error(f"Error loading tracks: {e}")
-        raise e
 
 
 @api_view(["GET"])
 def tracks_view(request):
     search = request.GET.get("search", "")
 
+    metadata = data.get_metadata()
+
     if search == "":
-        tracks = get_tracks()
+        tracks = metadata
     else:
-        tracks = get_tracks()[
-            get_tracks()["track_name"].str.contains(
+        tracks = metadata[
+            metadata["track_name"].str.contains(
                 search, case=False, na=False
             )
         ]

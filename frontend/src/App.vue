@@ -46,6 +46,14 @@
               </router-link>
             </li>
             <li>
+              <router-link to="/scrape" custom v-slot="{ href, navigate, isActive }">
+                <a :class="{ 'is-active': isActive }" :href="href" @click="navigate">
+                  <FontAwesomeIcon :icon="fas.faCloudArrowDown" />
+                  Scrape</a
+                >
+              </router-link>
+            </li>
+            <li>
               <router-link to="/umap" custom v-slot="{ href, navigate, isActive }">
                 <a :class="{ 'is-active': isActive }" :href="href" @click="navigate">
                   <FontAwesomeIcon :icon="fas.faChartLine" />

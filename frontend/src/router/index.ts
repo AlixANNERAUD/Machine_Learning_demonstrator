@@ -6,6 +6,7 @@ import UMAPView from '@/views/UMAPView.vue'
 import PCAView from '@/views/PCAView.vue'
 import SearchView from '@/views/SearchView.vue'
 import ComposeView from '@/views/ComposeView.vue'
+import ScrapeView from '@/views/ScrapeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,7 +40,7 @@ const router = createRouter({
       component: PCAView,
     },
     {
-      path: '/compose/:track_id?',
+      path: '/compose/:track_id?/:preview_url?',
       name: 'Compose',
       component: ComposeView,
       props: true,
@@ -48,6 +49,11 @@ const router = createRouter({
       path: '/search',
       name: 'Search',
       component: SearchView,
+    },
+    {
+      path: '/scrape',
+      name: 'Scrape',
+      component: ScrapeView,
     },
   ],
 })
