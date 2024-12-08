@@ -61,30 +61,19 @@
 <script setup lang="ts">
 import HeroComponent from '../components/HeroComponent.vue'
 import ErrorModalComponent from '../components/ErrorModalComponent.vue'
-import get_spotify from '../stores/spotifyInstance.ts'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Page, SimplifiedPlaylist, UserProfile } from '@spotify/web-api-ts-sdk'
 
 const route = useRoute()
 
-const profile = ref<UserProfile | null>(null)
+const profile = ref<null>(null)
 const loading = ref(true)
-const playlists = ref<Page<SimplifiedPlaylist> | null>(null)
+const playlists = ref<null>(null)
 const error = ref<string | null>(null)
 
 watch(() => route.params.id, fetch_data, { immediate: true })
 async function fetch_data() {
-  try {
-    profile.value = await (await get_spotify()).currentUser.profile()
-    playlists.value = await (await get_spotify()).currentUser.playlists.playlists()
 
-    console.log(profile.value)
-  } catch (err) {
-    error.value = (err as Error).toString()
-  } finally {
-    loading.value = false
-  }
 }
 
 function logout() {

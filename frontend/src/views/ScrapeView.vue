@@ -1,57 +1,40 @@
 <template>
-  <HeroComponent title="Scrape" subtitle="Scrape playlist from Deezer">
-    <!--Columns-->
-    <div class="columns">
-      <!--First column : scraping-->
-      <div class="column">
-        <div class="field has-addons">
-          <p class="control">
-            <input class="input" type="text" placeholder="Playlist identifier" v-model="playlist_id" />
-          </p>
-          <p class="control">
-            <button class="button" @click="scrape">
-              <FontAwesomeIcon :icon="fas.faCloudArrowDown" /> Scrape
-            </button>
-          </p>
-        </div>
+  <!--Columns-->
+  <div class="columns-2 px-44">
+    <!--First column : scraping-->
+    <h2>Scrape a playlist</h2>
+    <div>
+      <!--Input and button-->
+      <Input class="input" type="text" placeholder="Playlist identifier" v-model="playlist_id"
+        @input="fetch_playlist" />
+      <!--Button-->
+      <Button @click="scrape">
+        <FontAwesomeIcon :icon="fas.faCloudArrowDown" /> Scrape
+      </Button>
 
-        <div class="grid is-col-min-15">
-          <div v-for="track in tracks" :key="track.id" class="cell">
-            <TrackCardComponent :track="track" />
-          </div>
-        </div>
+      <Card v-if="playlist">
+        <CardHeader>
+          <CardTitle>{{ playlist.title }}</CardTitle>
+          <CardTitle>{{ playlist.description }}</CardTitle>
+        </CardHeader>
+      </Card>
 
-        <div v-if="loading" class="skeleton-block"></div>
-      </div>
-      <!--Second column : queue-->
-      <div class="column">
 
-        <table class="table is-fullwidth">
-          <thead>
-            <tr>
-              <th>Track</th>
-              <th>Artist</th>
-              <th>Album</th>
-              <th>Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="track in queue" :key="track.id">
-              <td>{{ track.title }}</td>
-              <td>{{ track.artist }}</td>
-              <td>{{ track.album }}</td>
-              <td>{{ track.duration }}</td>
-            </tr>
-          </tbody>
-        </table>
-
-      </div>
     </div>
-  </HeroComponent>
+    <!--Second column : queue-->
+    <div>
+      <h2>Queue</h2>
+
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import HeroComponent from '@/components/HeroComponent.vue'
+import Card from '@/components/ui/card/Card.vue';
+import CardHeader from '@/components/ui/card/CardHeader.vue';
+import CardTitle from '@/components/ui/card/CardTitle.vue';
+import Input from '@/components/ui/input/Input.vue';
+import axiosInstance from '@/stores/axiosInstance';
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -59,5 +42,25 @@ import { ref } from 'vue'
 
 const playlist_id = ref('')
 
+const playlist = ref(null)
+
+async function fetch_playlist() {
+  const result = await axiosInstance.get('/deezer/playlist', {
+    params: {
+      playlist_id: playlist_id.value,
+    },
+  })
+
+  playlist.value = result.data
+}
+
 const tracks = ref([])
+
+async function scrape() {
+  await axiosInstance.get('/deezer/scrape', {
+    params: {
+      playlist_id: playlist_id,
+    },
+  })
+}
 </script>

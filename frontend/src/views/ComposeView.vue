@@ -1,35 +1,26 @@
 <template>
-  <HeroComponent title="Compose" subtitle="Find matches">
-    <div class="field has-addons">
-      <p class="control">
-        <input class="input" type="text" placeholder="Find a track" v-model="track_id" />
-      </p>
-      <p class="control">
-        <button class="button" @click="compose">
-          <FontAwesomeIcon :icon="fas.faWandMagicSparkles" /> Compose
-        </button>
-      </p>
-    </div>
+  <div class="px-44">
+    <!--Navigation bar-->
+    <div class="flex w-full max-w-sm items-center space-x-2 py-4">
+      <Input placeholder="Enter a track to compose from ..." v-model="track_id" />
 
-    <div class="grid is-col-min-15">
-      <div v-for="track in tracks" :key="track.id" class="cell">
-        <TrackCardComponent :track="track" />
-      </div>
+      <Button @click="compose">
+        <FontAwesomeIcon :icon="fas.faWandMagicSparkles" /> Compose
+      </Button>
     </div>
-
-    <div v-if="loading" class="skeleton-block"></div>
-  </HeroComponent>
-  <ErrorModalComponent v-if="error" :message="error" />
+    <!--Table-->
+    <TracksTableComponent v-if="tracks.length" :tracks="tracks" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
-import HeroComponent from '@/components/HeroComponent.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import axiosInstance from '@/stores/axiosInstance'
-import ErrorModalComponent from '@/components/ErrorModalComponent.vue'
-import TrackCardComponent from '@/components/TrackCardComponent.vue'
+import Button from '@/components/ui/button/Button.vue'
+import Input from '@/components/ui/input/Input.vue'
+import TracksTableComponent from '@/components/TracksTableComponent.vue'
 
 const props = defineProps({
   track_id: String,

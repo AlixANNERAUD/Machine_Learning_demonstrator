@@ -1,15 +1,7 @@
 <template>
-  <HeroComponent title="PCA" subtitle="PCA visualization">
-    <div id="plot" class="plot-container"></div>
-  </HeroComponent>
+  <div id="plot" class="h-dvh w-dvw"></div>
 </template>
 
-<style>
-.plot-container {
-  width: 100%;
-  height: 65vh;
-}
-</style>
 
 <script setup lang="ts">
 import HeroComponent from '@/components/HeroComponent.vue'
