@@ -48,12 +48,27 @@ def embedding_worker():
         except Exception as e:
             logging.error(f"Error embedding track {track_id}: {e}")
             continue
-        
+
         # Add the track to the dataset
         data.add_track(track_id, embedding, metadata)
-        
+
         # Mark the task as done
         EMBEDDING_QUEUE.task_done()
+
+
+@api_view(["GET"])
+def get_queue(request):
+    download_queue = list(DOWNLOAD_QUEUE.queue)
+
+    embedding_queue = [track_id for track_id, _, _ in EMBEDDING_QUEUE.queue]
+
+    return JsonResponse(
+        {
+            "download_queue": download_queue,
+            "embedding_queue": embedding_queue,
+        }
+    )
+
 
 @api_view(["GET"])
 def scrape_view(request):

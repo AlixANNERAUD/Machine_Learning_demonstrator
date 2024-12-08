@@ -7,41 +7,41 @@ from django.http import JsonResponse
 
 from . import data
 
-configuration = apps.get_app_config("application")
-
+CONFIGURATION = apps.get_app_config("application")
 
 @api_view(["GET"])
 def tracks_view(request):
+    # Get the search query and page number from the request
     search = request.GET.get("search", "")
+    page_number = request.GET.get("page", 1)
 
+    # Do the search in a case-insensitive way if the search query is not empty
+    search = search.lower()
     metadata = data.get_metadata()
 
     if search == "":
         tracks = metadata
     else:
-        tracks = metadata[
-            metadata["track_name"].str.contains(
-                search, case=False, na=False
-            )
-        ]
+        tracks = filter(
+            lambda _, value: search in value["track_name"].lower(), metadata.items()
+        )
+        tracks = dict(tracks)
 
-    paginator = Paginator(tracks, 100)
-
-    page_number = request.GET.get("page", 1)
+    # Paginate the results
+    paginator = Paginator(tuple(tracks), 100)
 
     page = paginator.get_page(page_number)
 
     total_pages = paginator.num_pages
     current_page = page_number
 
-    tracks = page.object_list[
-        ["release_date", "track_name", "artists", "track_duration_ms"]
-    ]
+    print(f"Returning page {current_page} of {total_pages}")
 
     return JsonResponse(
         {
-            "tracks": tracks.to_dict(orient="records", index=True),
+            "tracks": page.object_list,
             "total_pages": total_pages,
             "current_page": current_page,
-        }
+        },
+        safe=False,
     )

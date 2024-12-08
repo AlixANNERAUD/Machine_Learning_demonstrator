@@ -5,6 +5,7 @@ import pandas
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 import requests
+import time
 
 DEEZER_URL = "https://api.deezer.com"
 TRACK_URL = f"{DEEZER_URL}/track"

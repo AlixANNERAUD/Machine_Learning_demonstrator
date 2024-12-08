@@ -1,62 +1,60 @@
 <template>
-  <div id="plot" class="h-dvh w-dvw"></div>
+  <div id="plot" class="h-dvh w-dvw">
+    <Skeleton v-if="loading" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import HeroComponent from '@/components/HeroComponent.vue'
-import axiosInstance from '@/stores/axiosInstance'
+import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
+import { backend, toast_error } from '@/stores/backend'
 import { height } from '@fortawesome/free-brands-svg-icons/fa42Group'
 import Plotly from 'plotly.js-dist-min'
-import { text } from 'stream/consumers'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
 const loading = ref(true)
-const error = ref<string | null>(null)
-const data = ref<string | null>(null)
 
 watch(() => route.params.id, fetch_data, { immediate: true })
 
 async function fetch_data() {
-  try {
-    console.log('fetching data')
+  loading.value = true
 
-    const response = await axiosInstance.get('/umap')
+  console.log('fetching data')
 
-    console.log("label", response.data.labels)
+  const response = await backend.get('/umap').catch(toast_error)
 
-    const trace = {
-      x: response.data.x,
-      y: response.data.y,
-      z: response.data.z,
-      text: response.data.labels,
-      type: 'scatter3d',
-      mode: 'markers',
-      marker: {
-        size: 3,
-        color: response.data.z,
-        colorscale: 'Viridis',
-      },
-    }
+  console.log('label', response.data.labels)
 
-    const layout = {
-      autosize: true,
-      template: 'plotly_dark',
-      margin: {
-        l: 0,
-        r: 0,
-        b: 0,
-        t: 0,
-      },
-    }
-
-    Plotly.newPlot('plot', [trace], layout, { responsive: true })
-  } catch (err) {
-    error.value = (err as Error).toString()
-  } finally {
-    loading.value = false
+  const trace = {
+    x: response.data.x,
+    y: response.data.y,
+    z: response.data.z,
+    text: response.data.labels,
+    type: 'scatter3d',
+    mode: 'markers',
+    marker: {
+      size: 3,
+      color: response.data.z,
+      colorscale: 'Viridis',
+    },
   }
+
+  const layout = {
+    autosize: true,
+    template: 'plotly_dark',
+    margin: {
+      l: 0,
+      r: 0,
+      b: 0,
+      t: 0,
+    },
+  }
+
+  Plotly.newPlot('plot', [trace], layout, { responsive: true })
+
+  loading.value = false
 }
 </script>

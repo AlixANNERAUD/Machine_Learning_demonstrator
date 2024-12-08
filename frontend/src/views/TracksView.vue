@@ -3,31 +3,57 @@
     <!--Navigation bar-->
     <div class="flex gap-2 items-center py-4">
       <!--Search bar-->
-      <Input class="max-w-sm" placeholder="Filter tracks ..." v-model="search" @input="search_track" />
+      <Input
+        class="max-w-sm"
+        placeholder="Filter tracks ..."
+        v-model="search"
+        @input="search_track"
+      />
       <!--Pagination-->
       <Pagination class="ml-auto">
         <PaginationList>
-          <Button v-if="current_page > 2" class="w-10 h-10 p-0" variant="outline" @click="change_page(1)">1</Button>
+          <Button
+            v-if="current_page > 2"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(1)"
+            >1</Button
+          >
           <PaginationEllipsis v-if="current_page > 2" />
-          <Button v-if="current_page > 1" class="w-10 h-10 p-0" variant="outline"
-            @click="change_page(current_page - 1)"> {{ current_page - 1 }} </Button>
-          <Button class="w-10 h-10 p-0" variant="default" @click="change_page(current_page)"> {{ current_page }}
+          <Button
+            v-if="current_page > 1"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(current_page - 1)"
+          >
+            {{ current_page - 1 }}
           </Button>
-          <Button v-if="current_page < total_pages" class="w-10 h-10 p-0" variant="outline"
-            @click="change_page(current_page + 1)">
+          <Button class="w-10 h-10 p-0" variant="default" @click="change_page(current_page)">
+            {{ current_page }}
+          </Button>
+          <Button
+            v-if="current_page < total_pages"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(current_page + 1)"
+          >
             {{ current_page + 1 }}
           </Button>
           <PaginationEllipsis v-if="current_page < total_pages - 1" />
-          <Button v-if="current_page < total_pages - 1" class="w-10 h-10 p-0" variant="outline"
-            @click="change_page(total_pages)">
+          <Button
+            v-if="current_page < total_pages - 1"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(total_pages)"
+          >
             {{ total_pages }}
           </Button>
-
         </PaginationList>
       </Pagination>
     </div>
 
     <!--Table-->
+    <Skeleton v-if="loading" />
     <MusicTableComponent v-if="tracks.length" :tracks="tracks" />
   </div>
 </template>
@@ -38,13 +64,13 @@ import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
 import { Pagination, PaginationList } from '@/components/ui/pagination'
 import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue'
-import axiosInstance from '@/stores/axiosInstance'
+import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
+import { backend, toast_error } from '@/stores/backend'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-
+import { toast } from 'vue-sonner'
 
 const loading = ref(true)
-const error = ref<string | null>(null)
 
 interface Artist {
   artist_id: string
@@ -70,31 +96,31 @@ const search = ref<string>('')
 watch(() => route.params.id, fetch_data, { immediate: true })
 
 async function fetch_data() {
-  try {
-    console.log('fetching data')
+  loading.value = true
 
-    const params: { page: number; search?: string } = {
-      page: current_page.value,
-    }
-
-    if (search.value.length > 0) {
-      params.search = search.value
-    }
-
-    const response = await axiosInstance.get('/tracks', { params })
-
-    tracks.value = response.data.tracks.map(parse_tracks)
-
-    total_pages.value = response.data.total_pages
-
-  } catch (e) {
-    error.value = (e as Error).message
-  } finally {
-    loading.value = false
+  const params: { page: number; search?: string } = {
+    page: current_page.value,
   }
+
+  if (search.value.length > 0) {
+    params.search = search.value
+  }
+
+  const response = await backend.get('/tracks', { params }).catch(toast_error)
+
+  if (!response) {
+    loading.value = false
+    return
+  }
+
+  tracks.value = response.data.tracks.map(parse_tracks)
+
+  total_pages.value = response.data.total_pages
+
+  loading.value = false
 }
 
-function parse_tracks(track): Artist[] {
+function parse_tracks(track: unknown): Artist[] {
   try {
     const artists = JSON.parse(track.artists.replace(/'/g, '"').replace(/`/g, '"'))
 

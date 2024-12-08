@@ -3,92 +3,86 @@ import logging
 import numpy
 import pandas
 import pickle
+import os
 
 CONFIGURATION = apps.get_app_config("application")
 
-DATA = None
-TRACKS_PATH = os.path.join(CONFIGURATION.data_path, "tracks.pickle")
+EMBEDDINGS = None
+METADATA = None
+
+METADATA_PATH = os.path.join(CONFIGURATION.data_path, "metadata.pickle")
+EMBEDDINGS_PATH = os.path.join(CONFIGURATION.data_path, "embeddings.pickle")
+
 
 def load_data():
+    global EMBEDDINGS, METADATA, METADATA_PATH, EMBEDDINGS_PATH
+
+    if EMBEDDINGS is not None or METADATA is not None:
+        return
+
     try:
-        with open(TRACKS_PATH, "rb") as file:
-            DATA = pickle.load(file)
-            
+        with open(METADATA_PATH, "rb") as file:
+            METADATA_PATH = pickle.load(file)
+
+        with open(EMBEDDINGS_PATH, "rb") as file:
+            EMBEDDINGS_PATH = pickle.load(file)
+
+        if len(EMBEDDINGS) != len(METADATA):
+            raise ValueError("Metadata and embeddings do not match")
 
     except FileNotFoundError:
         logging.info("Embeddings file not found, creating empty data")
 
-        DATA = {}
+        EMBEDDINGS = {}
+        METADATA = {}
 
     except Exception as e:
         logging.error(f"Error loading embeddings: {e}")
         raise e
 
-    return {"embeddings": embeddings, "metadata": metadata}
+
+load_data()
 
 
 def get_embeddings():
-    global DATA
+    global EMBEDDINGS
 
-    if DATA is None:
-        DATA = load_data()
-    
-    # From dict to numpy array
-    embeddings = numpy.array(list(DATA["embeddings"].items()))
-    
-    return embeddings
+    return EMBEDDINGS
 
+def get_metadata():
+    global METADATA
 
-def get_identifiers():
-    global DATA
-
-    if DATA is None:
-        DATA = load_data()
-        
-    # From dict to numpy array
-    identifiers = numpy.array(list(DATA["embeddings"].keys()))
-
-    return DATA["identifiers"]
-
+    return METADATA
 
 def get_track(track_id):
-    global DATA
+    global EMDEDINGS, METADATA
 
-    if DATA is None:
-        DATA = load_data()
-
-    metadata = DATA["metadata"][track_id]
-    embedding = DATA["embeddings"][track_id]
+    metadata = METADATA[track_id]
+    embedding = EMDEDINGS[track_id]
 
     return metadata, embedding
 
 
 def add_track(track_id, embedding, metadata):
-    global DATA
+    global EMBEDDINGS, METADATA
 
-    if DATA is None:
-        DATA = load_data()
-
-    if track_id in DATA["embeddings"] or track_id in DATA["metadata"]:
+    if track_id in EMBEDDINGS or track_id in METADATA:
         raise ValueError(f"Track {track_id} already exists")
-    
-    DATA["embeddings"][track_id] = embedding
-    DATA["identifiers"][track_id] = track_id
-    
+
+    EMBEDDINGS[track_id] = embedding
+    METADATA[track_id] = metadata
+
 
 def save_data():
-    global DATA
-
-    if DATA is None:
-        return
+    global EMBEDDINGS, METADATA
 
     try:
         with open(EMBEDDINGS_PATH, "wb") as file:
-            pickle.dump(DATA["embeddings"], file)
-        
+            pickle.dump(EMBEDDINGS, file)
+
         with open(METADATA_PATH, "wb") as file:
-            pickle.dump(DATA["metadata"], file)
-            
+            pickle.dump(METADATA, file)
+
     except Exception as e:
         logging.error(f"Error saving data: {e}")
         raise e

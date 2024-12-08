@@ -17,7 +17,7 @@
 import { defineProps, ref } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
-import axiosInstance from '@/stores/axiosInstance'
+import { backend, toast_error } from '@/stores/backend'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
 import TracksTableComponent from '@/components/TracksTableComponent.vue'
@@ -28,7 +28,6 @@ const props = defineProps({
 })
 
 const loading = ref<boolean>(false)
-const error = ref<string | null>(null)
 
 const track_id = ref(props.track_id)
 
@@ -42,17 +41,19 @@ async function fetch_data() {
 
   console.log('props.preview_url', props.preview_url)
 
-  const result = axiosInstance.get('/compose', {
-    params: {
-      track_id: track_id.value,
-      preview_url: props.preview_url,
-    },
-  })
+  const result = await backend
+    .get('/compose', {
+      params: {
+        track_id: track_id.value,
+        preview_url: props.preview_url,
+      },
+    })
+    .catch(toast_error)
 
-  const tracks_id = (await result).data.similar_tracks
+  const tracks_id = result.data.similar_tracks
 
   for (const track_id of tracks_id) {
-    axiosInstance
+    backend
       .get(`/deezer/track`, {
         params: {
           track_id,

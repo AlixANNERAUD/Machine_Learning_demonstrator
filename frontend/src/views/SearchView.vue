@@ -2,7 +2,13 @@
   <div class="px-44">
     <!--Navigation bar-->
     <div class="flex gap-2 items-center py-4">
-      <Input class="input" type="text" placeholder="Find a track on Deezer" v-model="search" @input="search_track" />
+      <Input
+        class="input"
+        type="text"
+        placeholder="Find a track on Deezer"
+        v-model="search"
+        @input="search_track"
+      />
     </div>
     <!--Table-->
     <MusicTableComponent v-if="tracks.length" class="w-full" :tracks="tracks" />
@@ -12,7 +18,7 @@
 <script setup lang="ts">
 import MusicTableComponent from '@/components/TracksTableComponent.vue'
 import Input from '@/components/ui/input/Input.vue'
-import axiosInstance from '@/stores/axiosInstance'
+import { backend, toast_error } from '@/stores/backend'
 import { ref } from 'vue'
 
 const search = ref('')
@@ -24,11 +30,13 @@ async function fetch_data() {
     return
   }
 
-  const result = await axiosInstance.get('/deezer/search', {
-    params: {
-      query: search.value,
-    },
-  })
+  const result = await backend
+    .get('/deezer/search', {
+      params: {
+        query: search.value,
+      },
+    })
+    .catch(toast_error)
 
   tracks.value = result.data.data
 
