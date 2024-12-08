@@ -106,16 +106,16 @@ def get_cosine_similarity(embeddings, embedding, results=5):
     )
 
     # Get the nearest indices
-    nearest_indices = numpy.argsort(cosine_similarities)[::-1][1:results]
+    nearest_indexes = numpy.argsort(cosine_similarities)[::-1][1:results]
 
-    return nearest_indices
+    return nearest_indexes
 
 def get_similar_tracks(embedding, results=5):  
     embeddings = data.get_embeddings()
     identifiers = data.get_identifiers()
 
-    nearest_indices = get_cosine_similarity(
+    nearest_indexes = get_cosine_similarity(
         embeddings, embedding, results=results
     )
 
-    return identifiers[nearest_indices].tolist()
+    return identifiers[nearest_indexes].tolist()

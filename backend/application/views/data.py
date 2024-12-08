@@ -2,38 +2,29 @@ from django.apps import apps
 import logging
 import numpy
 import pandas
+import pickle
 
 CONFIGURATION = apps.get_app_config("application")
 
 DATA = None
-EMBEDDINGS_PATH = f"{CONFIGURATION.data_path}/embeddings_330.npy"
-IDENTIFIERS_PATH = f"{CONFIGURATION.data_path}/id_embeddings_330.npy"
-METADATA_PATH = f"{CONFIGURATION.data_path}/tracks.hdf"
-
+TRACKS_PATH = os.path.join(CONFIGURATION.data_path, "tracks.pickle")
 
 def load_data():
     try:
-        embeddings = numpy.load(EMBEDDINGS_PATH)
-        id = numpy.load(IDENTIFIERS_PATH)
-        metadata = pandas.read_hdf(METADATA_PATH, key="metadata")
-        
-        metadata.dropna(inplace=True)
-
-        if metadata.shape[0] != embeddings.shape[0] != id.shape[0]:
-            logging.warning("Metadata, embeddings and identifiers do not match")
+        with open(TRACKS_PATH, "rb") as file:
+            DATA = pickle.load(file)
+            
 
     except FileNotFoundError:
         logging.info("Embeddings file not found, creating empty data")
 
-        embeddings = numpy.zeros(0)
-        id = numpy.zeros(0)
-        metadata = pandas.DataFrame()
+        DATA = {}
 
     except Exception as e:
         logging.error(f"Error loading embeddings: {e}")
         raise e
 
-    return {"embeddings": embeddings, "identifiers": id, "metadata": metadata}
+    return {"embeddings": embeddings, "metadata": metadata}
 
 
 def get_embeddings():
@@ -41,8 +32,11 @@ def get_embeddings():
 
     if DATA is None:
         DATA = load_data()
-
-    return DATA["embeddings"]
+    
+    # From dict to numpy array
+    embeddings = numpy.array(list(DATA["embeddings"].items()))
+    
+    return embeddings
 
 
 def get_identifiers():
@@ -50,29 +44,23 @@ def get_identifiers():
 
     if DATA is None:
         DATA = load_data()
+        
+    # From dict to numpy array
+    identifiers = numpy.array(list(DATA["embeddings"].keys()))
 
     return DATA["identifiers"]
 
 
-def get_metadata():
+def get_track(track_id):
     global DATA
 
     if DATA is None:
         DATA = load_data()
 
-    return DATA["metadata"]
+    metadata = DATA["metadata"][track_id]
+    embedding = DATA["embeddings"][track_id]
 
-
-def get_embedding(track_id):
-    embeddings = get_embeddings()
-    identifiers = get_identifiers()
-
-    index = numpy.where(identifiers == track_id)
-
-    if len(index[0]) == 0:
-        return None
-
-    return embeddings[index[0][0]]
+    return metadata, embedding
 
 
 def add_track(track_id, embedding, metadata):
@@ -81,13 +69,26 @@ def add_track(track_id, embedding, metadata):
     if DATA is None:
         DATA = load_data()
 
-    DATA["embeddings"] = numpy.append(DATA["embeddings"], [embedding], axis=0)
-    DATA["identifiers"] = numpy.append(DATA["identifiers"], [track_id], axis=0)
-    DATA["metadata"] = DATA["metadata"].append(metadata, ignore_index=True)
+    if track_id in DATA["embeddings"] or track_id in DATA["metadata"]:
+        raise ValueError(f"Track {track_id} already exists")
+    
+    DATA["embeddings"][track_id] = embedding
+    DATA["identifiers"][track_id] = track_id
+    
 
-    numpy.save(f"{CONFIGURATION.data_path}/embeddings_330.npy", DATA["embeddings"])
-    numpy.save(f"{CONFIGURATION.data_path}/id_embeddings_330.npy", DATA["identifiers"])
-    DATA["metadata"].to_hdf(METADATA_PATH, key="metadata")
+def save_data():
+    global DATA
 
+    if DATA is None:
+        return
 
-    return True
+    try:
+        with open(EMBEDDINGS_PATH, "wb") as file:
+            pickle.dump(DATA["embeddings"], file)
+        
+        with open(METADATA_PATH, "wb") as file:
+            pickle.dump(DATA["metadata"], file)
+            
+    except Exception as e:
+        logging.error(f"Error saving data: {e}")
+        raise e

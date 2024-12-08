@@ -4,7 +4,6 @@ import logging
 import pandas
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-import deezer
 import requests
 
 DEEZER_URL = "https://api.deezer.com"
