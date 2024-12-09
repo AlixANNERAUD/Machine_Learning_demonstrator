@@ -10,7 +10,6 @@ import { backend, toast_error } from '@/stores/backend'
 import Plotly from 'plotly.js-dist-min'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { toast } from 'vue-sonner'
 
 const route = useRoute()
 

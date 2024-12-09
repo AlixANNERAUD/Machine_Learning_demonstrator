@@ -1,9 +1,9 @@
 <template>
-  <div class="px-44">
+  <div class="lg:px-96">
     <!--Navigation bar-->
     <div class="flex gap-2 items-center py-4">
       <!--Search bar-->
-      <Input class="max-w-sm" placeholder="Filter tracks ..." v-model="search" @input="search_track" />
+      <Input class="max-w-sm" placeholder="Filter tracks ..." @input="search_track" />
       <!--Pagination-->
       <Pagination class="ml-auto">
         <PaginationList>
@@ -68,19 +68,20 @@ const route = useRoute()
 const tracks = ref<Track[]>([])
 const total_pages = ref<number>(0)
 const current_page = ref<number>(1)
-const search = ref<string>('')
+let search = ""
 
 watch(() => route.params.id, fetch_data, { immediate: true })
 
-async function fetch_data() {
+async function fetch_data(
+) {
   loading.value = true
 
   const params: { page: number; search?: string } = {
     page: current_page.value,
   }
 
-  if (search.value.length > 0) {
-    params.search = search.value
+  if (search.length > 0) {
+    params.search = search
   }
 
   const response = await backend.get('/tracks', { params }).catch(toast_error)
@@ -99,7 +100,12 @@ async function fetch_data() {
   total_pages.value = response.data.total_pages
 }
 
-function search_track() {
+function search_track(
+  event: InputEvent
+) {
+  const target = event.target as HTMLInputElement;
+  search = target.value;
+
   current_page.value = 1
   fetch_data()
 }

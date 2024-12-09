@@ -1,83 +1,89 @@
 <template>
   <!--Columns-->
-  <div class="grid grid-cols-3 px-44 gap-4">
+  <div class="flex flex-row items-start lg:px-44 gap-4">
     <!--First column : scraping-->
-    <Card>
-      <CardHeader>
-        <CardTitle>Scrape a playlist</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div class="flex w-full max-w-sm items-center gap-1.5">
-          <!--Input and button-->
-          <Input class="input" type="text" placeholder="Playlist identifier" v-model="playlist_id"
-            @input="fetch_playlist" />
-          <!--Button-->
-          <Button type="submit" @click="scrape">
-            <FontAwesomeIcon :icon="fas.faCloudArrowDown" /> Scrape
-          </Button>
-        </div>
+    <Card class="w-1/3">
+      <div>
+        <CardHeader>
+          <CardTitle>Scrape a playlist</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div class="flex w-full max-w-sm items-center gap-1.5">
+            <!--Input and button-->
+            <Input class="input" type="text" placeholder="Playlist identifier" v-model="playlist_id"
+              @input="fetch_playlist" />
+            <!--Button-->
+            <Button type="submit" @click="scrape">
+              <FontAwesomeIcon :icon="fas.faCloudArrowDown" /> Scrape
+            </Button>
+          </div>
 
-        <Card v-if="playlist || loading" class="mt-4">
-          <CardHeader>
-            <CardTitle v-if="loading">
-              <Skeleton class="h-6 w-33" />
-            </CardTitle>
+          <!--Playlist card-->
+          <Card v-if="playlist || loading" class="mt-4">
+            <CardHeader>
+              <CardTitle v-if="loading">
+                <Skeleton class="h-6 w-33" />
+              </CardTitle>
 
-            <img v-if="playlist" :src="playlist.picture_medium" alt="playlist cover" class="w-40 h-40 rounded-lg" />
+              <img v-if="playlist" :src="playlist.picture_medium" alt="playlist cover" class="w-40 h-40 rounded-lg" />
 
-            <CardTitle v-if="playlist">{{ playlist.title }}</CardTitle>
+              <CardTitle v-if="playlist">{{ playlist.title }}</CardTitle>
 
-            <CardDescription v-if="playlist">{{ playlist.description }}</CardDescription>
+              <CardDescription v-if="playlist">{{ playlist.description }}</CardDescription>
 
-            <CardDescription>
-              <Skeleton class="h-6 w-40" v-if="loading" />
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </CardContent>
+              <CardDescription>
+                <Skeleton class="h-6 w-40" v-if="loading" />
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </CardContent>
+      </div>
     </Card>
-
     <!--Second column : queue-->
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <FontAwesomeIcon :icon="fas.faCloudArrowDown" />
-          Download queue
-          <span v-if="download_queue.length > 0">
-            ({{ download_queue.length }})
-          </span>
-        </CardTitle>
-        <Table>
-          <TableBody>
-            <TableRow v-for="track_id in download_queue" :key="track_id">
-              <TableCell>
-                {{ track_id }}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </CardHeader>
+    <Card class="w-1/3">
+      <div>
+        <CardHeader>
+          <CardTitle>
+            <FontAwesomeIcon :icon="fas.faCloudArrowDown" />
+            Download queue
+            <span v-if="download_queue.length > 0">
+              ({{ download_queue.length }})
+            </span>
+          </CardTitle>
+          <Table>
+            <TableBody>
+              <TableRow v-for="track_id in download_queue" :key="track_id">
+                <TableCell>
+                  {{ track_id }}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardHeader>
+      </div>
     </Card>
 
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <FontAwesomeIcon :icon="fas.faCloudArrowDown" />
-          Embedding queue
-          <span v-if="embedding_queue.length > 0">
-            ({{ embedding_queue.length }})
-          </span>
-        </CardTitle>
-        <Table>
-          <TableBody>
-            <TableRow v-for="track_id in embedding_queue" :key="track_id">
-              <TableCell>
-                {{ track_id }}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </CardHeader>
+    <Card class="w-1/3">
+      <div>
+        <CardHeader>
+          <CardTitle>
+            <FontAwesomeIcon :icon="fas.faCloudArrowDown" />
+            Embedding queue
+            <span v-if="embedding_queue.length > 0">
+              ({{ embedding_queue.length }})
+            </span>
+          </CardTitle>
+          <Table>
+            <TableBody>
+              <TableRow v-for="track_id in embedding_queue" :key="track_id">
+                <TableCell>
+                  {{ track_id }}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardHeader>
+      </div>
     </Card>
 
   </div>
@@ -100,8 +106,22 @@ import { backend, toast_error } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { toast } from 'vue-sonner'
+
+let interval: number | null = null
+
+onMounted(
+  () => {
+    interval = setInterval(fetch_queues, 2000)
+  }
+)
+
+onUnmounted(
+  () => {
+    if (interval) clearInterval(interval)
+  }
+)
 
 const playlist_id = defineModel<string>("")
 
@@ -123,7 +143,6 @@ async function fetch_queues() {
   embedding_queue.value = result.data.embedding_queue
 }
 
-setInterval(fetch_queues, 2000)
 
 async function fetch_playlist(event: InputEvent) {
   loading.value = true
