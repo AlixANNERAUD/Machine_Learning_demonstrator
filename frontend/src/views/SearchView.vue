@@ -1,8 +1,12 @@
 <template>
   <div class="lg:px-24 py-6">
     <!--Navigation bar-->
-    <div class="flex w-full max-w-sm gap-2 items-center py-4">
-      <Input class="input" type="text" placeholder="Find a track on Deezer" @input="fetch_data" />
+    <div class="relative w-full max-w-sm items-center">
+      <Input class="pl-10" type="text" placeholder="Find a track on Deezer" @input="fetch_data" />
+
+      <span class="absolute start-0 inset-y-0 flex items-center justify-center px-4">
+        <FontAwesomeIcon :icon="fas.faSearch" />
+      </span>
     </div>
     <!--Table-->
     <TracksTableComponent v-if="tracks.length" :tracks="tracks" />
@@ -13,6 +17,8 @@
 import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Input from '@/components/ui/input/Input.vue'
 import { backend, toast_error } from '@/stores/backend'
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue'
 
 const tracks = ref([])
