@@ -1,5 +1,32 @@
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { toast } from 'vue-sonner'
+
+class Backend {
+  public axios: AxiosInstance
+
+  constructor() {
+    this.axios = axios.create({
+      baseURL: 'http://localhost:8000/api/',
+      timeout: 5000,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'), // Utility function to extract CSRF token
+      },
+    })
+  }
+
+  public async get_track(track_id: string) {
+    const result = await this.axios.get(`/deezer/track`, {
+      params: {
+        track_id,
+      },
+    })
+
+    return result.data
+  }
+}
+
+const backend_instance = new Backend()
 
 const backend = axios.create({
   baseURL: 'http://localhost:8000/api/',
@@ -37,4 +64,4 @@ function toast_error(error: AxiosError) {
   }
 }
 
-export { backend, toast_error }
+export { backend, backend_instance as backend_instance, toast_error }
