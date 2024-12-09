@@ -2,7 +2,11 @@
   <div class="lg:px-24 space-y-4">
     <!--Navigation bar-->
     <div class="flex w-full max-w-sm items-center space-x-2">
-      <Input placeholder="Enter a track to compose from ..." v-model="track_id" @input="handle_input" />
+      <Input
+        placeholder="Enter a track to compose from ..."
+        v-model="track_id"
+        @input="handle_input"
+      />
 
       <Button @click="compose">
         <FontAwesomeIcon :icon="fas.faWandMagicSparkles" /> Compose
@@ -36,17 +40,19 @@ const track_id = ref(props.track_id)
 
 const route = useRoute()
 
-
-watch(() => route.params.id, async () => {
-  if (track_id.value) {
-    await fetch_track_preview(track_id.value)
-  }
-}, { immediate: true })
-
 const tracks = ref([])
 
 const preview_track = ref<object | null>(null)
 
+watch(
+  () => route.params.id,
+  async () => {
+    if (track_id.value) {
+      await fetch_track_preview(track_id.value)
+    }
+  },
+  { immediate: true },
+)
 
 function handle_input(event: InputEvent) {
   preview_track.value = null
@@ -77,8 +83,7 @@ async function fetch_tracks() {
         preview_url: props.preview_url,
       },
       timeout: 30000,
-    },
-    )
+    })
     .catch(toast_error)
 
   const tracks_id = result.data.similar_tracks
