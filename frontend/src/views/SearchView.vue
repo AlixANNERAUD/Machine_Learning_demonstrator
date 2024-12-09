@@ -1,7 +1,7 @@
 <template>
   <div class="lg:px-24 py-6">
     <!--Navigation bar-->
-    <div class="relative w-full max-w-sm items-center">
+    <div class="relative w-full max-w-sm items-center py-4">
       <Input class="pl-10" type="text" placeholder="Find a track on Deezer" @input="fetch_data" />
 
       <span class="absolute start-0 inset-y-0 flex items-center justify-center px-4">
