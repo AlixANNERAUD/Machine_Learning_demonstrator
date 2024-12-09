@@ -171,3 +171,4 @@ cython_debug/
 *.wav
 *embedding*.npy
 processed_ids*.txt
+*.pickle
