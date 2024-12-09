@@ -17,18 +17,17 @@ def tracks_view(request):
 
     # Do the search in a case-insensitive way if the search query is not empty
     search = search.lower()
-    metadata = data.get_metadata()
+    metadata = data.get_metadata().values()
     
     if search == "":
         tracks = metadata
     else:
         tracks = filter(
-            lambda _, value: search in value["track_name"].lower(), metadata.items()
+            lambda value: search in value["title"].lower(), metadata
         )
-        tracks = dict(tracks)
 
     # Paginate the results
-    paginator = Paginator(tracks.values(), 100)
+    paginator = Paginator(list(tracks), 100)
 
     print(f"Track : {paginator.object_list}")
     
