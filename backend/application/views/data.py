@@ -39,6 +39,10 @@ def save():
         logging.error(f"Error saving data: {e}")
         raise e
 
+def track_exists(track_id):
+    global EMBEDDINGS
+
+    return track_id in EMBEDDINGS
 
 def load_data():
     global EMBEDDINGS, METADATA, ALBUMS

@@ -24,8 +24,10 @@ def download_worker():
         # Get the track id from the queue (this will block until a track is available)
         track_id = DOWNLOAD_QUEUE.get(block=True)
 
-        print(f"Downloading track {track_id}")
-
+        # Check if the track is already in the dataset
+        if data.track_exists(track_id):
+            continue
+        
         # Get the track metadata
         try:
             metadata = deezer.get_track(track_id)
@@ -33,8 +35,10 @@ def download_worker():
             logging.error(f"Error downloading track {track_id}: {e}")
             continue
 
+        print(f"Downloading track {metadata}")
+
         if metadata["preview"] == "":
-            logging.info(f"No preview url for track : {metadata['preview']}")
+            logging.info(f"No preview url for track : {track_id}")
             continue
 
         # Download the track
@@ -51,8 +55,6 @@ def embedding_worker():
     while True:
         # Get the track id, path and metadata from the queue (this will block until a track is available)
         track_id, path, metadata = EMBEDDING_QUEUE.get(block=True)
-
-        print(f"Embedding track {track_id}")
 
         # Compute the embedding
         try:
@@ -111,33 +113,29 @@ def scrape_view(request):
     playlist_id = request.GET.get("playlist_id", "")
 
     if playlist_id != "":
-        # Get the playlist metadata from Deezer
+        # Get all the tracks from the playlist
         try:
-            playlist = deezer.get_playlist(playlist_id)
+            tracks = deezer.get_all_playlist_tracks(playlist_id)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
-        print(f"Tracks : {len(playlist['tracks']['data'])}")
+        print(f"Downloading {len(tracks)} tracks")
 
-        for track in playlist["tracks"]["data"]:
-            # Check if the track is already in the dataset
-            try:
-                data.get_track(track["id"])
-            # If the track is not in the dataset, add it to the download queue
-            except KeyError:
-                track_id = track["id"]
-                DOWNLOAD_QUEUE.put(track_id)
+        # Add the tracks to the download queue if they are not already in the dataset
+        for track in tracks:
+            if not data.track_exists(track["id"]):
+                DOWNLOAD_QUEUE.put(track["id"])
 
+        # Tell the user that the tracks are being downloaded
         return JsonResponse({"message": "Downloading tracks"})
 
     track_id = request.GET.get("track_id", "")
 
     # Check if the track_id is empty
     if track_id != "":
-        try:
-            data.get_track(track_id)
-            return JsonResponse({"message": "Track already in dataset"})
-        except KeyError:
+        if data.track_exists(track_id):
+            return JsonResponse({"message": "Track already downloaded"})
+        else:
             DOWNLOAD_QUEUE.put(track_id)
             return JsonResponse({"message": "Downloading track"})
 

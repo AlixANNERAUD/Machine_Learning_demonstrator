@@ -15,21 +15,49 @@ SEARCH_URL = f"{DEEZER_URL}/search"
 PLAYLIST_URL = f"{DEEZER_URL}/playlist"
 ALBUM_URL = f"{DEEZER_URL}/album"
 
-def get_album(album_id):
-    print(f"Getting album from : {ALBUM_URL}/{album_id}")
 
+def get_album(album_id):
     response = requests.get(f"{ALBUM_URL}/{album_id}")
 
     response.raise_for_status()
 
     return response.json()
 
-def get_playlist(playlist_id):
-    response = requests.get(f"{PLAYLIST_URL}/{playlist_id}")
+
+def get_playlist(playlist_id, index=None, limit=None):
+    parameters = {}
+
+    if index is not None:
+        parameters["index"] = index
+
+    if limit is not None:
+        parameters["limit"] = limit
+
+    response = requests.get(f"{PLAYLIST_URL}/{playlist_id}", params=parameters)
 
     response.raise_for_status()
 
     return response.json()
+
+def get_all_playlist_tracks(playlist_id):
+    tracks = []
+    index = 0
+    limit = 400
+
+    while True:
+        playlist = get_playlist(playlist_id, index=index, limit=limit)
+    
+        if "tracks" not in playlist:
+            break
+
+        tracks += playlist["tracks"]["data"]
+
+        if len(playlist["tracks"]["data"]) < limit:
+            break
+
+        index += limit
+
+    return tracks
 
 @api_view(["GET"])
 def playlist_view(request):
@@ -45,12 +73,14 @@ def playlist_view(request):
 
     return JsonResponse(playlist)
 
-def get_track(track_id):    
+
+def get_track(track_id):
     response = requests.get(f"{TRACK_URL}/{track_id}")
 
     response.raise_for_status()
 
     return response.json()
+
 
 @api_view(["GET"])
 def track_view(request):
@@ -61,17 +91,18 @@ def track_view(request):
 
     try:
         track, _ = data.get_track(track_id)
-        
+
         return JsonResponse(track)
     except KeyError:
         pass
-        
-    try:       
+
+    try:
         track = get_track(track_id)
     except Exception as e:
         return JsonResponse({str(e)}, status=500)
 
     return JsonResponse(track)
+
 
 @api_view(["GET"])
 def search_view(request):
