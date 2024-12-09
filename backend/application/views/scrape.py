@@ -18,6 +18,7 @@ DOWNLOAD_THREAD = None
 EMBEDDING_THREAD = None
 SAVE_THREAD = None
 
+
 def download_worker():
     while True:
         # Get the track id from the queue (this will block until a track is available)
@@ -31,12 +32,11 @@ def download_worker():
         except Exception as e:
             logging.error(f"Error downloading track {track_id}: {e}")
             continue
-        
+
         if metadata["preview"] == "":
             logging.info(f"No preview url for track : {metadata['preview']}")
             continue
-        
-            
+
         # Download the track
         path = processing.download_track(track_id, metadata["preview"])
 
@@ -69,6 +69,7 @@ def embedding_worker():
         # Mark the task as done
         EMBEDDING_QUEUE.task_done()
 
+
 def save_worker():
     while True:
         # Get the track id, embedding and metadata from the queue (this will block until a track is available)
@@ -83,7 +84,8 @@ def save_worker():
         SAVE_QUEUE.task_done()
 
         if SAVE_QUEUE.empty():
-            data.save()      
+            data.save()
+
 
 @api_view(["GET"])
 def queues_view(request):
@@ -101,33 +103,47 @@ def queues_view(request):
 
 @api_view(["GET"])
 def scrape_view(request):
-
+    # Get the parameters from the request
     playlist_id = request.GET.get("playlist_id", "")
 
     if playlist_id != "":
+        # Get the playlist metadata from Deezer
         try:
             playlist = deezer.get_playlist(playlist_id)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
         for track in playlist["tracks"]["data"]:
-            track_id = track["id"]
-            DOWNLOAD_QUEUE.put(track_id)
+            # Check if the track is already in the dataset
+            try:
+                data.get_track(track["id"])
+            # If the track is not in the dataset, add it to the download queue
+            except KeyError:
+                track_id = track["id"]
+                DOWNLOAD_QUEUE.put(track_id)
 
         return JsonResponse({"message": "Downloading tracks"})
 
     track_id = request.GET.get("track_id", "")
 
+    # Check if the track_id is empty
     if track_id != "":
-        DOWNLOAD_QUEUE.put(track_id)
-
-        return JsonResponse({"message": "Downloading track"})
+        try:
+            data.get_track(track_id)
+            return JsonResponse({"message": "Track already in dataset"})
+        except KeyError:
+            DOWNLOAD_QUEUE.put(track_id)
+            return JsonResponse({"message": "Downloading track"})
 
 
 def start_workers():
     global DOWNLOAD_THREAD, EMBEDDING_THREAD
 
-    if DOWNLOAD_THREAD is not None and EMBEDDING_THREAD is not None and SAVE_THREAD is not None:
+    if (
+        DOWNLOAD_THREAD is not None
+        and EMBEDDING_THREAD is not None
+        and SAVE_THREAD is not None
+    ):
         return
 
     DOWNLOAD_THREAD = threading.Thread(target=download_worker)
