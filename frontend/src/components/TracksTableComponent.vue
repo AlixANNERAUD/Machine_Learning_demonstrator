@@ -82,8 +82,11 @@ interface Track {
   preview: string;
 }
 
-function play_pause(event) {
-  const audio = event.target.querySelector('audio')
+function play_pause(event: MouseEvent) {
+  const target = event.target as HTMLElement;
+
+  const audio = target.querySelector('audio') as HTMLAudioElement;
+  
   if (audio.paused) {
     audio.play()
   } else {
