@@ -87,7 +87,7 @@ def load_data():
         with open(ALBUMS_PATH, "rb") as file:
             ALBUMS = pickle.load(file)
 
-        logging.info(f"Loaded {len(ALBUMS)} ALBUMS")
+        logging.info(f"Loaded {len(ALBUMS)} albums")
     except FileNotFoundError:
         logging.info("ALBUMS file not found, creating empty data")
         ALBUMS = {}
@@ -112,10 +112,10 @@ def load_data():
 
 load_data()
 
-def get_albums(ALBUMS_id):
+def get_albums(album_id):
     global ALBUMS
 
-    return ALBUMS[ALBUMS_id]
+    return ALBUMS[album_id]
 
 
 def get_embeddings():
@@ -146,3 +146,11 @@ def add_track(track_id, embedding, metadata):
 
     EMBEDDINGS[track_id] = embedding
     METADATA[track_id] = metadata
+
+def add_album(album_id, album):
+    global ALBUMS
+
+    if album_id in ALBUMS:
+        raise ValueError(f"Album {album_id} already exists")
+
+    ALBUMS[album_id] = album

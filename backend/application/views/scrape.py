@@ -40,8 +40,6 @@ def download_worker():
         # Download the track
         path = processing.download_track(track_id, metadata["preview"])
 
-        print(f"download : ")
-
         # Add the track id, path and metadata to the embedding queue
         EMBEDDING_QUEUE.put((track_id, path, metadata))
 
@@ -75,7 +73,12 @@ def save_worker():
         # Get the track id, embedding and metadata from the queue (this will block until a track is available)
         track_id, embedding, metadata = SAVE_QUEUE.get(block=True)
 
-        print(f"Saving track {track_id}")
+        # Check if album is already in the dataset
+        try:
+            data.get_albums(metadata["album"]["id"])
+        except KeyError:
+            album = deezer.get_album(metadata["album"]["id"])
+            data.add_album(metadata["album"]["id"], album)
 
         # Add the track to the dataset
         data.add_track(track_id, embedding, metadata)
@@ -83,6 +86,7 @@ def save_worker():
         # Mark the task as done
         SAVE_QUEUE.task_done()
 
+        # If the queue is empty, save the dataset
         if SAVE_QUEUE.empty():
             data.save()
 
@@ -112,6 +116,8 @@ def scrape_view(request):
             playlist = deezer.get_playlist(playlist_id)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+
+        print(f"Tracks : {len(playlist['tracks']['data'])}")
 
         for track in playlist["tracks"]["data"]:
             # Check if the track is already in the dataset
