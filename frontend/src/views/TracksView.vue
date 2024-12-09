@@ -92,32 +92,11 @@ async function fetch_data() {
     return
   }
 
-  //tracks.value = response.data.tracks.map(parse_tracks)
-
   console.log(response.data.tracks)
 
   tracks.value = response.data.tracks
 
   total_pages.value = response.data.total_pages
-
-  loading.value = false
-}
-
-function parse_tracks(track: unknown): Artist[] {
-  try {
-    const artists = JSON.parse(track.artists.replace(/'/g, '"').replace(/`/g, '"'))
-
-    return {
-      ...track,
-      artists,
-    }
-  } catch {
-    console.warn('Failed to parse artists for track', track)
-    return {
-      ...track,
-      artists: [],
-    }
-  }
 }
 
 function search_track() {
