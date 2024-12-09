@@ -57,7 +57,7 @@ const props = defineProps({
   tracks: Array,
 })
 
-const tracks: Track[] = props.tracks as Track[]
+// const tracks: Track[] = props.tracks as Track[]
 
 import format_time from '@/stores/utils'
 import { fas } from '@fortawesome/free-solid-svg-icons'
