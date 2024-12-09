@@ -20,22 +20,16 @@ def compose_view(request):
     if track_id == "":
         return JsonResponse({"error": "No track specified"}, status=400)
 
-
-    try:
-        track = deezer.get_track(track_id)
-
-        preview_url = track["preview"]
-    except Exception as e:
-        return JsonResponse({str(e)}, status=500)
-
     # Try to get the embedding from the data
-    embedding = data.get_embedding(track_id)
-
+    try:
+        metadata, embedding = data.get_track(track_id)
     # If the embedding is not found, download the track, create the embedding and add it to the data
-    if embedding is None:
+    except KeyError:
+        metadata = deezer.get_track(track_id)
+        
         logging.info(f"Downloading track {track_id}")
 
-        path = processing.download_track(track_id, preview_url)
+        path = processing.download_track(track_id, metadata["preview"])
 
         logging.info(f"Creating embedding for track {track_id}")
 
@@ -43,7 +37,9 @@ def compose_view(request):
 
         logging.info(f"Adding embedding for track {track_id}")
 
-        data.add_tracks(track_id, embedding)
+        data.add_track(track_id, embedding, metadata)
+        
+        data.save()
 
     # Get the similar tracks
     logging.info(f"Getting cosine similarity for track {track_id}")

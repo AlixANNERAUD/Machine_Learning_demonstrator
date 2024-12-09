@@ -118,10 +118,11 @@ def get_cosine_similarity(embeddings, embedding, results=5):
 
 def get_similar_tracks(embedding, results=5):  
     embeddings = data.get_embeddings()
-    identifiers = data.get_identifiers()
+    
+    embeddings_values = numpy.array(list(embeddings.values()))
 
     nearest_indexes = get_cosine_similarity(
-        embeddings, embedding, results=results
+        embeddings_values, embedding, results=results
     )
 
-    return identifiers[nearest_indexes].tolist()
+    return [list(embeddings.keys())[i] for i in nearest_indexes]

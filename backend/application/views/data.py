@@ -57,10 +57,10 @@ def get_metadata():
     return METADATA
 
 def get_track(track_id):
-    global EMDEDINGS, METADATA
+    global EMBEDDINGS, METADATA
 
     metadata = METADATA[track_id]
-    embedding = EMDEDINGS[track_id]
+    embedding = EMBEDDINGS[track_id]
 
     return metadata, embedding
 
