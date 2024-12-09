@@ -17,7 +17,7 @@ const data_group = [
 
 const composition_group = [
   { title: 'Search', icon: 'faSearch', url: '/search', },
-  { title: 'Compose', icon: 'faMusic', url: '/compose', },
+  { title: 'Compose', icon: 'faWandMagicSparkles', url: '/compose', },
 ]
 
 const groups = [
