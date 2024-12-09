@@ -1,14 +1,12 @@
 <template>
-  <div id="plot" class="h-dvh w-dvw">
+  <div id="plot" class="w-full h-screen">
     <Skeleton v-if="loading" />
   </div>
 </template>
 
 <script setup lang="ts">
-import HeroComponent from '@/components/HeroComponent.vue'
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
 import { backend, toast_error } from '@/stores/backend'
-import { height } from '@fortawesome/free-brands-svg-icons/fa42Group'
 import Plotly from 'plotly.js-dist-min'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -24,11 +22,11 @@ async function fetch_data() {
 
   console.log('fetching data')
 
-  const response = await backend.get('/umap',
-    {
+  const response = await backend
+    .get('/umap', {
       timeout: 30000,
-    }
-  ).catch(toast_error)
+    })
+    .catch(toast_error)
 
   console.log('label', response.data.labels)
 

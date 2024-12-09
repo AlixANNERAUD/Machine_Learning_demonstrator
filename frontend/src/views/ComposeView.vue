@@ -1,5 +1,5 @@
 <template>
-  <div class="lg:px-24 space-y-4">
+  <div class="lg:px-24 space-y-4 py-6">
     <!--Navigation bar-->
     <div class="flex w-full max-w-sm items-center space-x-2">
       <Input

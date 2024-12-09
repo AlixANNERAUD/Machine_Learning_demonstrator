@@ -1,5 +1,5 @@
 <template>
-  <div id="plot" class="h-dvh w-dvw">
+  <div id="plot" class="w-full h-screen">
     <Skeleton v-if="loading" />
   </div>
 </template>

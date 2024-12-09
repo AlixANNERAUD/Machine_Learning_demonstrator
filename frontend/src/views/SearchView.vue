@@ -1,5 +1,5 @@
 <template>
-  <div class="lg:px-24">
+  <div class="lg:px-24 py-6">
     <!--Navigation bar-->
     <div class="flex w-full max-w-sm gap-2 items-center py-4">
       <Input class="input" type="text" placeholder="Find a track on Deezer" @input="fetch_data" />

@@ -1,6 +1,6 @@
 <template>
   <!--Columns-->
-  <div class="flex flex-row items-start lg:px-44 gap-4">
+  <div class="flex flex-row items-start lg:px-44 gap-4 py-6">
     <!--First column : scraping-->
     <Card class="w-1/3">
       <div>

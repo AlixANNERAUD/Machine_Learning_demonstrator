@@ -6,7 +6,7 @@
         <TableRow v-for="track in tracks" :key="track.id">
           <!--Album cover-->
           <TableCell v-if="track.album">
-            <img :src="track.album.cover_small" alt="album cover" />
+            <img :src="track.album.cover_small" class="min-w-6" alt="album cover" />
           </TableCell>
           <!--Track title and artist-->
           <TableCell v-if="track.album">
