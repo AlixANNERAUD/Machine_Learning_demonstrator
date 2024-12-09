@@ -1,12 +1,12 @@
 <template>
-  <div class="lg:px-96">
+  <div class="lg:px-24">
     <!--Navigation bar-->
     <div class="flex gap-2 items-center py-4">
       <!--Search bar-->
       <Input class="max-w-sm" placeholder="Filter tracks ..." @input="search_track" />
       <!--Pagination-->
       <Pagination class="ml-auto">
-        <PaginationList>
+        <PaginationList class="flex">
           <Button v-if="current_page > 2" class="w-10 h-10 p-0" variant="outline" @click="change_page(1)">1</Button>
           <PaginationEllipsis v-if="current_page > 2" />
           <Button v-if="current_page > 1" class="w-10 h-10 p-0" variant="outline"

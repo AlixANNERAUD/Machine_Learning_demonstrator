@@ -1,5 +1,5 @@
 <template>
-  <div class="lg:px-96 space-y-4">
+  <div class="lg:px-24 space-y-4">
     <!--Navigation bar-->
     <div class="flex w-full max-w-sm items-center space-x-2">
       <Input placeholder="Enter a track to compose from ..." v-model="track_id" @input="handle_input" />
@@ -16,13 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, watch } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { backend, backend_instance, toast_error } from '@/stores/backend'
+import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
-import TracksTableComponent from '@/components/TracksTableComponent.vue'
+import { backend, backend_instance, toast_error } from '@/stores/backend'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { defineProps, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const props = defineProps({

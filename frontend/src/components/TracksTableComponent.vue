@@ -10,7 +10,8 @@
           </TableCell>
           <!--Track title and artist-->
           <TableCell v-if="track.album">
-            <strong>{{ track.title_short }}</strong><br />
+            <strong>{{ track.title_short }}</strong
+            ><br />
             {{ track.artist.name }}
           </TableCell>
           <!--Album title-->
@@ -25,10 +26,12 @@
           </TableCell>
           <!--Compose button-->
           <TableCell>
-            <router-link :to="{
-              name: 'Compose',
-              params: { track_id: track.id },
-            }">
+            <router-link
+              :to="{
+                name: 'Compose',
+                params: { track_id: track.id },
+              }"
+            >
               <Button variant="outline">
                 <FontAwesomeIcon :icon="fas.faWandMagicSparkles" />
               </Button>
@@ -43,7 +46,6 @@
               <FontAwesomeIcon :icon="fas.faPlay" />
             </Button>
           </TableCell>
-
         </TableRow>
       </TableBody>
     </Table>
@@ -53,46 +55,46 @@
 <script setup lang="ts">
 const props = defineProps({
   tracks: Array,
-});
+})
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from './ui/button/Button.vue';
-import Table from './ui/table/Table.vue';
-import TableBody from './ui/table/TableBody.vue';
-import TableCell from './ui/table/TableCell.vue';
-import TableRow from './ui/table/TableRow.vue';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import format_time from '@/stores/utils';
+const tracks: Track[] = props.tracks as Track[]
+
+import format_time from '@/stores/utils'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import Button from './ui/button/Button.vue'
+import Table from './ui/table/Table.vue'
+import TableBody from './ui/table/TableBody.vue'
+import TableCell from './ui/table/TableCell.vue'
+import TableRow from './ui/table/TableRow.vue'
 
 interface Track {
-  id: number;
-  title_short: string;
+  id: number
+  title_short: string
   artist: {
-    name: string;
-  };
+    name: string
+  }
   album: {
-    title: string;
-    cover_small: string;
-  };
-  duration: number;
+    title: string
+    cover_small: string
+  }
+  duration: number
   artists: Array<{
-    artist_id: number;
-    artist_name: string;
-  }>;
-  preview: string;
+    artist_id: number
+    artist_name: string
+  }>
+  preview: string
 }
 
 function play_pause(event: MouseEvent) {
-  const target = event.target as HTMLElement;
+  const target = event.target as HTMLElement
 
-  const audio = target.querySelector('audio') as HTMLAudioElement;
-  
+  const audio = target.querySelector('audio') as HTMLAudioElement
+
   if (audio.paused) {
     audio.play()
   } else {
     audio.pause()
   }
 }
-
-
 </script>
