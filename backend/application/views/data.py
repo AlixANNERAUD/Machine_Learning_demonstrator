@@ -4,6 +4,7 @@ import numpy
 import pandas
 import pickle
 import os
+from . import deezer
 
 CONFIGURATION = apps.get_app_config("application")
 
@@ -21,26 +22,41 @@ def load_data():
         return
 
     try:
-        with open(METADATA_PATH, "rb") as file:
-            METADATA = pickle.load(file)
-
         with open(EMBEDDINGS_PATH, "rb") as file:
             EMBEDDINGS = pickle.load(file)
 
-        if len(EMBEDDINGS) != len(METADATA):
-            raise ValueError("Metadata and embeddings do not match")
-
         logging.info(f"Loaded {len(EMBEDDINGS)} embeddings")
-
     except FileNotFoundError:
         logging.info("Embeddings file not found, creating empty data")
-
         EMBEDDINGS = {}
-        METADATA = {}
-
     except Exception as e:
         logging.error(f"Error loading embeddings: {e}")
         raise e
+
+    try:
+        with open(METADATA_PATH, "rb") as file:
+            METADATA = pickle.load(file)
+
+        logging.info(f"Loaded {len(METADATA)} metadata")
+    except FileNotFoundError:
+        logging.info("Metadata file not found, creating empty data")
+        METADATA = {}
+    except Exception as e:
+        logging.error(f"Error loading metadata: {e}")
+        raise e
+
+    # Remove metadata for tracks that do not have embeddings
+    for track_id in list(METADATA.keys()):
+        if track_id not in EMBEDDINGS:
+            logging.info(f"Removing metadata for track {track_id}")
+            del METADATA[track_id]
+
+    # Get metadata for tracks that do not have metadata
+    for track_id in EMBEDDINGS.keys():
+        if track_id not in METADATA:
+            logging.info(f"Getting metadata for track {track_id}")
+            metadata = deezer.get_track(track_id)
+            METADATA[track_id] = metadata
 
 
 load_data()
@@ -51,10 +67,12 @@ def get_embeddings():
 
     return EMBEDDINGS
 
+
 def get_metadata():
     global METADATA
 
     return METADATA
+
 
 def get_track(track_id):
     global EMBEDDINGS, METADATA
@@ -73,6 +91,7 @@ def add_track(track_id, embedding, metadata):
 
     EMBEDDINGS[track_id] = embedding
     METADATA[track_id] = metadata
+
 
 def save():
     global EMBEDDINGS, METADATA
