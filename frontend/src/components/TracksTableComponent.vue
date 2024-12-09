@@ -27,7 +27,7 @@
           <TableCell>
             <router-link :to="{
               name: 'Compose',
-              params: { track_id: track.id, preview_url: track.preview },
+              params: { track_id: track.id },
             }">
               <Button variant="outline">
                 <FontAwesomeIcon :icon="fas.faWandMagicSparkles" />

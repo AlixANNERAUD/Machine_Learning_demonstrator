@@ -37,9 +37,15 @@ RESAMPLER = torchaudio.transforms.Resample(
 
 AGGREGATOR = torch.nn.Conv1d(in_channels=25, out_channels=1, kernel_size=1).to(DEVICE)
 
+# Create the audio path if it doesn't exist
+os.makedirs(CONFIGURATION.audio_path, exist_ok=True)
+
 def download_track(track_id, preview_url):
-    # Create the audio path if it doesn't exist
-    os.makedirs(CONFIGURATION.audio_path, exist_ok=True)
+    path = os.path.join(CONFIGURATION.audio_path, f"{track_id}.mp3")
+
+    # Check if the track was already downloaded
+    if os.path.exists(path):
+        return path
 
     # Download the track
     response = requests.get(preview_url)
@@ -50,7 +56,7 @@ def download_track(track_id, preview_url):
     audio_file = pydub.AudioSegment.from_file(io.BytesIO(response.content))
 
     # Convert the track to a wav file
-    path = os.path.join(CONFIGURATION.audio_path, f"{track_id}.mp3")
+    
     audio_file.export(path, format="wav")
 
     return path
