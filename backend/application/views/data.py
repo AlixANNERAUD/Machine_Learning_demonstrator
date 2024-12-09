@@ -10,14 +10,17 @@ CONFIGURATION = apps.get_app_config("application")
 
 EMBEDDINGS = None
 METADATA = None
+ALBUMS = None
 
 METADATA_PATH = os.path.join(CONFIGURATION.data_path, "metadata.pickle")
 EMBEDDINGS_PATH = os.path.join(CONFIGURATION.data_path, "embeddings.pickle")
+ALBUMS_PATH = os.path.join(CONFIGURATION.data_path, "albums.pickle")
+
 
 def save():
-    global EMBEDDINGS, METADATA
+    global EMBEDDINGS, METADATA, ALBUMS
 
-    if EMBEDDINGS is None or METADATA is None:
+    if EMBEDDINGS is None or METADATA is None or ALBUMS is None:
         raise ValueError("Data not loaded")
 
     logging.info("Saving data")
@@ -29,14 +32,18 @@ def save():
         with open(METADATA_PATH, "wb") as file:
             pickle.dump(METADATA, file)
 
+        with open(ALBUMS_PATH, "wb") as file:
+            pickle.dump(ALBUMS, file)
+
     except Exception as e:
         logging.error(f"Error saving data: {e}")
         raise e
 
-def load_data():
-    global EMBEDDINGS, METADATA, METADATA_PATH, EMBEDDINGS_PATH
 
-    if EMBEDDINGS is not None or METADATA is not None:
+def load_data():
+    global EMBEDDINGS, METADATA, ALBUMS
+
+    if EMBEDDINGS is not None or METADATA is not None or ALBUMS is not None:
         return
 
     try:
@@ -75,11 +82,42 @@ def load_data():
             logging.info(f"Getting metadata for track {track_id}")
             metadata = deezer.get_track(track_id)
             METADATA[track_id] = metadata
-            
+
+    try:
+        with open(ALBUMS_PATH, "rb") as file:
+            ALBUMS = pickle.load(file)
+
+        logging.info(f"Loaded {len(ALBUMS)} ALBUMS")
+    except FileNotFoundError:
+        logging.info("ALBUMS file not found, creating empty data")
+        ALBUMS = {}
+    except Exception as e:
+        logging.error(f"Error loading ALBUMS: {e}")
+        raise e
+
+    # Remove ALBUMS for tracks that do not have metadata
+    for track_id in list(ALBUMS.keys()):
+        if track_id not in METADATA:
+            logging.info(f"Removing album for track {track_id}")
+            del ALBUMS[track_id]
+
+    # Get ALBUMS for tracks that do not have ALBUMS
+    for track_id, track in METADATA.items():
+        if track_id not in ALBUMS:
+            logging.info(f"Getting album for track {track_id}")
+            album = deezer.get_album(track["album"]["id"])
+            ALBUMS[track_id] = album
+
     save()
 
 
 load_data()
+
+
+def get_ALBUMS(ALBUMS_id):
+    global ALBUMS
+
+    return ALBUMS[ALBUMS_id]
 
 
 def get_embeddings():
@@ -106,10 +144,8 @@ def get_track(track_id):
 def add_track(track_id, embedding, metadata):
     global EMBEDDINGS, METADATA
 
-    if track_id in EMBEDDINGS or track_id in METADATA:
+    if track_id in EMBEDDINGS:
         raise ValueError(f"Track {track_id} already exists")
 
     EMBEDDINGS[track_id] = embedding
     METADATA[track_id] = metadata
-
-
