@@ -29,16 +29,11 @@ def tracks_view(request):
     # Paginate the results
     paginator = Paginator(list(tracks), 100)
 
-    print(f"Track : {paginator.object_list}")
-    
-
     page = paginator.get_page(page_number)
 
     total_pages = paginator.num_pages
     current_page = page_number
-
-    print(f"Returning page {current_page} of {total_pages}")
-
+    
     return JsonResponse(
         {
             "tracks": page.object_list,

@@ -27,25 +27,15 @@ def compose_view(request):
     except KeyError:
         metadata = deezer.get_track(track_id)
         
-        logging.info(f"Downloading track {track_id}")
-
         path = processing.download_track(track_id, metadata["preview"])
 
-        logging.info(f"Creating embedding for track {track_id}")
-
         embedding = processing.compute_embedding(track_id, path)
-
-        logging.info(f"Adding embedding for track {track_id}")
 
         data.add_track(track_id, embedding, metadata)
         
         data.save()
 
     # Get the similar tracks
-    logging.info(f"Getting cosine similarity for track {track_id}")
-
     similar_tracks = processing.get_similar_tracks(embedding, results=results)
-
-    print(f"Similar tracks {similar_tracks}")
 
     return JsonResponse({"similar_tracks": similar_tracks})

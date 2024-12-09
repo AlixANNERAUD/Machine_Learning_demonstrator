@@ -56,8 +56,6 @@ def track_view(request):
     except Exception as e:
         return JsonResponse({str(e)}, status=500)
 
-    print(f"Track : {track}")
-
     return JsonResponse(track)
 
 @api_view(["GET"])
