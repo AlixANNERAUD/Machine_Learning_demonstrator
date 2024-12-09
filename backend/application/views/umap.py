@@ -27,7 +27,7 @@ def load_umap():
         with open(UMAP_PATH, "rb") as file:
             UMAP = pickle.load(file)
 
-        if len(UMAP) != len(embeddings):
+        if len(UMAP["labels"]) != len(embeddings):
             logging.info("UMAP shape does not match, regenerating ...")
             raise FileNotFoundError
 

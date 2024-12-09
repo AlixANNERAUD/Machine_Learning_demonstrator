@@ -25,7 +25,7 @@ def load_PCA():
         with open(PCA_PATH, "rb") as file:
             PCA = pickle.load(file)
 
-        if len(PCA) != len(embeddings):
+        if len(PCA["labels"]) != len(embeddings):
             logging.info("PCA shape does not match, regenerating ...")
             raise FileNotFoundError
 
