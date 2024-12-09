@@ -39,11 +39,14 @@
           </TableCell>
           <!--Play/Pause button-->
           <TableCell>
-            <Button @click="play_pause">
+            <Button @click="play_pause" :data-track-id="track.id">
               <audio controls class="hidden">
                 <source :src="track.preview" type="audio/mpeg" />
               </audio>
-              <FontAwesomeIcon :icon="fas.faPlay" />
+              <FontAwesomeIcon
+                class="status-playing block"
+                :icon="!!track.playing ? fas.faPause : fas.faPlay"
+              />
             </Button>
           </TableCell>
         </TableRow>
@@ -54,14 +57,15 @@
 
 <script setup lang="ts">
 const props = defineProps({
-  tracks: Array,
+  tracks: Array<Track>,
 })
 
-// const tracks: Track[] = props.tracks as Track[]
+const tracks = ref(props.tracks)
 
 import format_time from '@/stores/utils'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { ref } from 'vue'
 import Button from './ui/button/Button.vue'
 import Table from './ui/table/Table.vue'
 import TableBody from './ui/table/TableBody.vue'
@@ -84,6 +88,7 @@ interface Track {
     artist_name: string
   }>
   preview: string
+  playing?: boolean | null | undefined
 }
 
 function play_pause(event: MouseEvent) {
@@ -96,5 +101,23 @@ function play_pause(event: MouseEvent) {
   } else {
     audio.pause()
   }
+
+  audio.onended = () => {
+    audio.currentTime = 0
+    audio.pause()
+    tracks.value = tracks.value?.map((track: Track) => {
+      track.playing = false
+      return track
+    })
+  }
+
+  const track_id = target.dataset.trackId
+  // update tracks
+  tracks.value = tracks.value?.map((track: Track) => {
+    if (track.id === Number(track_id)) {
+      track.playing = !track.playing
+    }
+    return track
+  })
 }
 </script>
