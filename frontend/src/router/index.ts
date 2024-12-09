@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '@/views/DashboardView.vue'
-import AccountView from '@/views/AccountView.vue'
 import TracksView from '@/views/TracksView.vue'
 import UMAPView from '@/views/UMAPView.vue'
 import PCAView from '@/views/PCAView.vue'
@@ -15,14 +14,6 @@ const router = createRouter({
       path: '/',
       name: 'Dashboard',
       component: DashboardView,
-    },
-    {
-      path: '/account',
-      name: 'Account',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: AccountView,
     },
     {
       path: '/tracks',
