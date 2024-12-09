@@ -110,11 +110,9 @@ def load_data():
 
     save()
 
-
 load_data()
 
-
-def get_ALBUMS(ALBUMS_id):
+def get_albums(ALBUMS_id):
     global ALBUMS
 
     return ALBUMS[ALBUMS_id]
@@ -139,7 +137,6 @@ def get_track(track_id):
     embedding = EMBEDDINGS[track_id]
 
     return metadata, embedding
-
 
 def add_track(track_id, embedding, metadata):
     global EMBEDDINGS, METADATA
