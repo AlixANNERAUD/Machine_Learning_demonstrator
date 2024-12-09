@@ -14,6 +14,24 @@ METADATA = None
 METADATA_PATH = os.path.join(CONFIGURATION.data_path, "metadata.pickle")
 EMBEDDINGS_PATH = os.path.join(CONFIGURATION.data_path, "embeddings.pickle")
 
+def save():
+    global EMBEDDINGS, METADATA
+
+    if EMBEDDINGS is None or METADATA is None:
+        raise ValueError("Data not loaded")
+
+    logging.info("Saving data")
+
+    try:
+        with open(EMBEDDINGS_PATH, "wb") as file:
+            pickle.dump(EMBEDDINGS, file)
+
+        with open(METADATA_PATH, "wb") as file:
+            pickle.dump(METADATA, file)
+
+    except Exception as e:
+        logging.error(f"Error saving data: {e}")
+        raise e
 
 def load_data():
     global EMBEDDINGS, METADATA, METADATA_PATH, EMBEDDINGS_PATH
@@ -57,6 +75,8 @@ def load_data():
             logging.info(f"Getting metadata for track {track_id}")
             metadata = deezer.get_track(track_id)
             METADATA[track_id] = metadata
+            
+    save()
 
 
 load_data()
@@ -93,16 +113,3 @@ def add_track(track_id, embedding, metadata):
     METADATA[track_id] = metadata
 
 
-def save():
-    global EMBEDDINGS, METADATA
-
-    try:
-        with open(EMBEDDINGS_PATH, "wb") as file:
-            pickle.dump(EMBEDDINGS, file)
-
-        with open(METADATA_PATH, "wb") as file:
-            pickle.dump(METADATA, file)
-
-    except Exception as e:
-        logging.error(f"Error saving data: {e}")
-        raise e
