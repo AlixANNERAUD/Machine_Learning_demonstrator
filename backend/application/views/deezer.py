@@ -7,14 +7,24 @@ from django.http import JsonResponse
 import requests
 import time
 
+from . import data
+
 DEEZER_URL = "https://api.deezer.com"
 TRACK_URL = f"{DEEZER_URL}/track"
 SEARCH_URL = f"{DEEZER_URL}/search"
 PLAYLIST_URL = f"{DEEZER_URL}/playlist"
+ALBUM_URL = f"{DEEZER_URL}/album"
+
+def get_album(album_id):
+    print(f"Getting album from : {ALBUM_URL}/{album_id}")
+
+    response = requests.get(f"{ALBUM_URL}/{album_id}")
+
+    response.raise_for_status()
+
+    return response.json()
 
 def get_playlist(playlist_id):
-    print(f"Getting playlist from : {PLAYLIST_URL}/{playlist_id}")
-
     response = requests.get(f"{PLAYLIST_URL}/{playlist_id}")
 
     response.raise_for_status()
@@ -35,9 +45,7 @@ def playlist_view(request):
 
     return JsonResponse(playlist)
 
-def get_track(track_id):
-    print(f"Getting track from : {TRACK_URL}/{track_id}")
-
+def get_track(track_id):    
     response = requests.get(f"{TRACK_URL}/{track_id}")
 
     response.raise_for_status()
@@ -52,6 +60,13 @@ def track_view(request):
         return JsonResponse({"error": "No track identifier provided"}, status=400)
 
     try:
+        track, _ = data.get_track(track_id)
+        
+        return JsonResponse(track)
+    except KeyError:
+        pass
+        
+    try:       
         track = get_track(track_id)
     except Exception as e:
         return JsonResponse({str(e)}, status=500)
