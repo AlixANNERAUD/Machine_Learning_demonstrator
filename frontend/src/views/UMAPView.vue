@@ -24,7 +24,11 @@ async function fetch_data() {
 
   console.log('fetching data')
 
-  const response = await backend.get('/umap').catch(toast_error)
+  const response = await backend.get('/umap',
+    {
+      timeout: 30000,
+    }
+  ).catch(toast_error)
 
   console.log('label', response.data.labels)
 

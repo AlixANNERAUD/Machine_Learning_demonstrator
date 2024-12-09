@@ -1,5 +1,5 @@
 <template>
-  <div class="px-44">
+  <div class="px-96">
     <!--Navigation bar-->
     <div class="flex w-full max-w-sm items-center space-x-2 py-4">
       <Input placeholder="Enter a track to compose from ..." v-model="track_id" />
@@ -47,7 +47,9 @@ async function fetch_data() {
         track_id: track_id.value,
         preview_url: props.preview_url,
       },
-    })
+      timeout: 30000,
+    },
+  )
     .catch(toast_error)
 
   const tracks_id = result.data.similar_tracks
