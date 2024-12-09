@@ -74,7 +74,6 @@ def add_track(track_id, embedding, metadata):
     EMBEDDINGS[track_id] = embedding
     METADATA[track_id] = metadata
 
-
 def save():
     global EMBEDDINGS, METADATA
 

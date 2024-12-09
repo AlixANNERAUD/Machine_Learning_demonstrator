@@ -1,69 +1,80 @@
 from rest_framework.decorators import api_view
 from django.apps import apps
-import pandas
 import logging
 from django.http import JsonResponse
 import os
+import pickle
+import numpy
 
 from . import data
 
 CONFIGURATION = apps.get_app_config("application")
-UMAP_PATH = f"{CONFIGURATION.data_path}/umap.hdf"
+UMAP_PATH = f"{CONFIGURATION.data_path}/UMAP.pickle"
 
-def load_umap(path: str):
+UMAP = None
+
+def load_umap():
+    global UMAP, UMAP_PATH
+
+    if UMAP is not None:
+        return
+    
     logging.info("Loading UMAP ...")
 
     embeddings = data.get_embeddings()
 
     try:
-        umap = pandas.read_hdf(path, key="umap")
+        with open(UMAP_PATH, "rb") as file:
+            UMAP = pickle.load(file)
 
-        if umap.shape[0] != embeddings.shape[0]:
+        if len(UMAP) != len(embeddings):
             logging.info("UMAP shape does not match, regenerating ...")
             raise FileNotFoundError
 
-        return umap
     except FileNotFoundError:
         logging.info("UMAP file not found, generating ...")
 
         import umap
 
+        # Create a list of labels (artist - title)
+        metadata = data.get_metadata()
+        labels = []
+        for track_id in embeddings.keys():
+            track_metadata = metadata[track_id]
+
+            labels.append(
+                f"{track_metadata['artist']['name']} - {track_metadata['title_short']}"
+            )
+            
+        # Create a UMAP model
         umap_model = umap.UMAP(
             n_components=3, n_neighbors=10, min_dist=0.1, metric="correlation"
         )
+        embeddings_values = numpy.array(list(embeddings.values()))
+        umap = umap_model.fit_transform(embeddings_values)
 
-        umap = umap_model.fit_transform(embeddings)
 
-        umap = pandas.DataFrame(umap, columns=["x", "y", "z"])
-
-        umap.to_hdf(path, key="umap")
+        UMAP = {
+            "x": umap[:, 0].tolist(),
+            "y": umap[:, 1].tolist(),
+            "z": umap[:, 2].tolist(),
+            "labels": labels,
+        }
+        
+        # Save the UMAP to a file
+        with open(UMAP_PATH, "wb") as file:
+            pickle.dump(UMAP, file)
 
         logging.info("UMAP generated")
 
-        return umap
     except Exception as e:
         logging.error(f"Error loading UMAP: {e}")
         raise e
 
-def get_umap():
-    global UMAP
-
-    if UMAP is None:
-        UMAP = load_umap(UMAP_PATH)
-
-    return UMAP
-
-UMAP = None
-
 @api_view(["GET"])
 def umap_view(request):
-    umap = get_umap()
+    global UMAP
+    
+    load_umap()
 
-    plot_data = {
-        "x": umap["x"].to_list(),
-        "y": umap["y"].to_list(),
-        "z": umap["z"].to_list(),
-        "labels": data.get_metadata()["track_name"].to_list(),
-    }
-
-    return JsonResponse(plot_data)
+    return JsonResponse(UMAP)
