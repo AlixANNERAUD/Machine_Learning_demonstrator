@@ -22,13 +22,15 @@ def load_data():
 
     try:
         with open(METADATA_PATH, "rb") as file:
-            METADATA_PATH = pickle.load(file)
+            METADATA = pickle.load(file)
 
         with open(EMBEDDINGS_PATH, "rb") as file:
-            EMBEDDINGS_PATH = pickle.load(file)
+            EMBEDDINGS = pickle.load(file)
 
         if len(EMBEDDINGS) != len(METADATA):
             raise ValueError("Metadata and embeddings do not match")
+
+        logging.info(f"Loaded {len(EMBEDDINGS)} embeddings")
 
     except FileNotFoundError:
         logging.info("Embeddings file not found, creating empty data")
