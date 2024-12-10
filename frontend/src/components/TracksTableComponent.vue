@@ -71,7 +71,7 @@ import Table from './ui/table/Table.vue'
 import TableBody from './ui/table/TableBody.vue'
 import TableCell from './ui/table/TableCell.vue'
 import TableRow from './ui/table/TableRow.vue'
-import type { Track } from '@/stores/backend';
+import type { Track } from '@/stores/backend'
 
 function play_pause(event: MouseEvent) {
   const target = event.target as HTMLElement
