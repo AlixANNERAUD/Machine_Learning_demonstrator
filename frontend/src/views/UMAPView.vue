@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
 import { backend, toast_error } from '@/stores/backend'
-import  { newPlot, type Layout, type PlotData } from 'plotly.js-dist-min'
+import { newPlot, type Layout, type PlotData } from 'plotly.js-dist-min'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 

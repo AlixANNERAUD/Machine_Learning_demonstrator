@@ -14,22 +14,40 @@
       <!--Pagination-->
       <Pagination class="ml-auto">
         <PaginationList class="flex">
-          <Button v-if="current_page > 2" class="w-10 h-10 p-0" variant="outline" @click="change_page(1)">1</Button>
+          <Button
+            v-if="current_page > 2"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(1)"
+            >1</Button
+          >
           <PaginationEllipsis v-if="current_page > 2" />
-          <Button v-if="current_page > 1" class="w-10 h-10 p-0" variant="outline"
-            @click="change_page(current_page - 1)">
+          <Button
+            v-if="current_page > 1"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(current_page - 1)"
+          >
             {{ current_page - 1 }}
           </Button>
           <Button class="w-10 h-10 p-0" variant="default" @click="change_page(current_page)">
             {{ current_page }}
           </Button>
-          <Button v-if="current_page < total_pages" class="w-10 h-10 p-0" variant="outline"
-            @click="change_page(current_page + 1)">
+          <Button
+            v-if="current_page < total_pages"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(current_page + 1)"
+          >
             {{ current_page + 1 }}
           </Button>
           <PaginationEllipsis v-if="current_page < total_pages - 1" />
-          <Button v-if="current_page < total_pages - 1" class="w-10 h-10 p-0" variant="outline"
-            @click="change_page(total_pages)">
+          <Button
+            v-if="current_page < total_pages - 1"
+            class="w-10 h-10 p-0"
+            variant="outline"
+            @click="change_page(total_pages)"
+          >
             {{ total_pages }}
           </Button>
         </PaginationList>

@@ -2,7 +2,11 @@
   <div class="lg:px-24 space-y-4 py-6">
     <!--Navigation bar-->
     <div class="flex w-full max-w-sm items-center space-x-2">
-      <Input placeholder="Enter a track to compose from ..." v-model="track_id" @input="handle_input" />
+      <Input
+        placeholder="Enter a track to compose from ..."
+        v-model="track_id"
+        @input="handle_input"
+      />
 
       <Button @click="compose">
         <FontAwesomeIcon :icon="fas.faWandMagicSparkles" /> Compose

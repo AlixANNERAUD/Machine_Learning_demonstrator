@@ -10,8 +10,13 @@
         <CardContent>
           <div class="flex w-full max-w-sm items-center gap-1.5">
             <!--Input and button-->
-            <Input class="input" type="text" placeholder="Playlist identifier" v-model="playlist_id"
-              @input="fetch_playlist" />
+            <Input
+              class="input"
+              type="text"
+              placeholder="Playlist identifier"
+              v-model="playlist_id"
+              @input="fetch_playlist"
+            />
             <!--Button-->
             <Button type="submit" @click="scrape">
               <FontAwesomeIcon :icon="fas.faCloudArrowDown" /> Scrape
@@ -25,7 +30,12 @@
                 <Skeleton class="h-6 w-33" />
               </CardTitle>
 
-              <img v-if="playlist" :src="playlist.picture_medium" alt="playlist cover" class="w-40 h-40 rounded-lg" />
+              <img
+                v-if="playlist"
+                :src="playlist.picture_medium"
+                alt="playlist cover"
+                class="w-40 h-40 rounded-lg"
+              />
 
               <CardTitle v-if="playlist">{{ playlist.title }}</CardTitle>
 
@@ -46,9 +56,7 @@
           <CardTitle>
             <FontAwesomeIcon :icon="fas.faCloudArrowDown" />
             Download queue
-            <span v-if="download_queue.length > 0">
-              ({{ download_queue.length }})
-            </span>
+            <span v-if="download_queue.length > 0"> ({{ download_queue.length }}) </span>
           </CardTitle>
           <Table>
             <TableBody>
@@ -69,9 +77,7 @@
           <CardTitle>
             <FontAwesomeIcon :icon="fas.faCloudArrowDown" />
             Embedding queue
-            <span v-if="embedding_queue.length > 0">
-              ({{ embedding_queue.length }})
-            </span>
+            <span v-if="embedding_queue.length > 0"> ({{ embedding_queue.length }}) </span>
           </CardTitle>
           <Table>
             <TableBody>
@@ -85,7 +91,6 @@
         </CardHeader>
       </div>
     </Card>
-
   </div>
 </template>
 
@@ -104,19 +109,15 @@ import { toast } from 'vue-sonner'
 
 let interval: ReturnType<typeof setTimeout> | null = null
 
-onMounted(
-  () => {
-    interval = setInterval(fetch_queues, 2000)
-  }
-)
+onMounted(() => {
+  interval = setInterval(fetch_queues, 2000)
+})
 
-onUnmounted(
-  () => {
-    if (interval) clearInterval(interval)
-  }
-)
+onUnmounted(() => {
+  if (interval) clearInterval(interval)
+})
 
-const playlist_id = defineModel<string>("")
+const playlist_id = defineModel<string>('')
 
 const loading = ref(false)
 const playlist = ref<Playlist | null>(null)
@@ -136,7 +137,6 @@ async function fetch_queues() {
   embedding_queue.value = result.data.embedding_queue
 }
 
-
 async function fetch_playlist(event: InputEvent) {
   loading.value = true
 
@@ -147,7 +147,7 @@ async function fetch_playlist(event: InputEvent) {
     return
   }
 
-  const target = event.target as HTMLInputElement;
+  const target = event.target as HTMLInputElement
   const query = target.value
 
   if (!query) {
@@ -169,7 +169,6 @@ async function fetch_playlist(event: InputEvent) {
   }
 
   playlist.value = result.data
-
 }
 
 async function scrape() {
@@ -183,8 +182,6 @@ async function scrape() {
     toast.error(result.data.error)
     return
   }
-
-
 
   toast.success('Scraping started')
 }

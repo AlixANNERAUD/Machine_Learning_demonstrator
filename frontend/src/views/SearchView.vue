@@ -17,8 +17,8 @@
 import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Input from '@/components/ui/input/Input.vue'
 import { backend, toast_error } from '@/stores/backend'
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref } from 'vue'
 
 const tracks = ref([])
