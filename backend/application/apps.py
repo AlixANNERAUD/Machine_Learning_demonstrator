@@ -33,11 +33,10 @@ class ApplicationConfig(AppConfig):
         logging.info("Loading environment variables ...")
         dotenv.load_dotenv()
 
-        self.data_path = os.getenv("DATA_PATH")
+        self.data_path = os.getenv("DATA_PATH", "data")
 
-        if self.data_path is None:
-            raise ValueError("`DATA_PATH` environment variable not found")
-
+        self.audio_path = os.getenv("AUDIO_PATH", "/tmp/deez_nalyzer")
+        
         self.spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
 
         if self.spotify_client_id is None:
@@ -49,11 +48,6 @@ class ApplicationConfig(AppConfig):
         if self.spotify_client_secret is None:
             logging.error("Spotify client secret not found")
             raise ValueError("Spotify client secret not found")
-
-        self.audio_path = os.getenv("AUDIO_PATH")
-
-        if self.audio_path is None:
-            raise ValueError("`AUDIO_PATH` environment variable not found")
 
     def ready(self):
         logging.basicConfig(level=logging.INFO)
