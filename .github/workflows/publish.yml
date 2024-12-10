@@ -26,15 +26,15 @@ jobs:
       - name: Build and push backend Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./backend/Dockerfile
+          context: ./backend
+          file: ./Dockerfile
           push: true
           tags: ghcr.io/alixanneraud/deez-nalyzer-backend:latest
 
       - name: Build and push frontend Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./frontend/Dockerfile
+          context: ./frontend
+          file: ./Dockerfile
           push: true
           tags: ghcr.io/alixanneraud/deez-nalyzer-frontend:latest
