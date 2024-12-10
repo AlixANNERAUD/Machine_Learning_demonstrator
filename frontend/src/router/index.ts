@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardView from '@/views/DashboardView.vue'
-import TracksView from '@/views/TracksView.vue'
-import UMAPView from '@/views/UMAPView.vue'
-import PCAView from '@/views/PCAView.vue'
-import SearchView from '@/views/SearchView.vue'
-import ComposeView from '@/views/ComposeView.vue'
-import ScrapeView from '@/views/ScrapeView.vue'
+const DashboardView = () => import('@/views/DashboardView.vue');
+const TracksView = () => import('@/views/TracksView.vue');
+const UMAPView = () => import('@/views/UMAPView.vue');
+const PCAView = () => import('@/views/PCAView.vue');
+const SearchView = () => import('@/views/SearchView.vue');
+const ComposeView = () => import('@/views/ComposeView.vue');
+const ScrapeView = () => import('@/views/ScrapeView.vue');
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
