@@ -14,40 +14,22 @@
       <!--Pagination-->
       <Pagination class="ml-auto">
         <PaginationList class="flex">
-          <Button
-            v-if="current_page > 2"
-            class="w-10 h-10 p-0"
-            variant="outline"
-            @click="change_page(1)"
-            >1</Button
-          >
+          <Button v-if="current_page > 2" class="w-10 h-10 p-0" variant="outline" @click="change_page(1)">1</Button>
           <PaginationEllipsis v-if="current_page > 2" />
-          <Button
-            v-if="current_page > 1"
-            class="w-10 h-10 p-0"
-            variant="outline"
-            @click="change_page(current_page - 1)"
-          >
+          <Button v-if="current_page > 1" class="w-10 h-10 p-0" variant="outline"
+            @click="change_page(current_page - 1)">
             {{ current_page - 1 }}
           </Button>
           <Button class="w-10 h-10 p-0" variant="default" @click="change_page(current_page)">
             {{ current_page }}
           </Button>
-          <Button
-            v-if="current_page < total_pages"
-            class="w-10 h-10 p-0"
-            variant="outline"
-            @click="change_page(current_page + 1)"
-          >
+          <Button v-if="current_page < total_pages" class="w-10 h-10 p-0" variant="outline"
+            @click="change_page(current_page + 1)">
             {{ current_page + 1 }}
           </Button>
           <PaginationEllipsis v-if="current_page < total_pages - 1" />
-          <Button
-            v-if="current_page < total_pages - 1"
-            class="w-10 h-10 p-0"
-            variant="outline"
-            @click="change_page(total_pages)"
-          >
+          <Button v-if="current_page < total_pages - 1" class="w-10 h-10 p-0" variant="outline"
+            @click="change_page(total_pages)">
             {{ total_pages }}
           </Button>
         </PaginationList>
@@ -67,7 +49,7 @@ import Input from '@/components/ui/input/Input.vue'
 import { Pagination, PaginationList } from '@/components/ui/pagination'
 import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue'
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
-import { backend, toast_error } from '@/stores/backend'
+import { backend, toast_error, type Track } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref, watch } from 'vue'
@@ -75,20 +57,6 @@ import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
 
 const loading = ref(true)
-
-interface Artist {
-  artist_id: string
-  artist_name: string
-}
-
-interface Track {
-  id: number
-  position: number
-  release_date: string
-  track_name: string
-  artists: Artist[]
-  track_duration_ms: number
-}
 
 const route = useRoute()
 
@@ -118,8 +86,6 @@ async function fetch_data() {
     toast.error('No response from server')
     return
   }
-
-  console.log(response.data.tracks)
 
   tracks.value = response.data.tracks
 

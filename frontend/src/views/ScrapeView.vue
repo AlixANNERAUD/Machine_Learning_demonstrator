@@ -91,25 +91,18 @@
 
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue'
-import Card from '@/components/ui/card/Card.vue'
-import CardContent from '@/components/ui/card/CardContent.vue'
-import CardDescription from '@/components/ui/card/CardDescription.vue'
-import CardHeader from '@/components/ui/card/CardHeader.vue'
-import CardTitle from '@/components/ui/card/CardTitle.vue'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Input from '@/components/ui/input/Input.vue'
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
-import Table from '@/components/ui/table/Table.vue'
-import TableBody from '@/components/ui/table/TableBody.vue'
-import TableCell from '@/components/ui/table/TableCell.vue'
-import TableRow from '@/components/ui/table/TableRow.vue'
-import { backend, toast_error } from '@/stores/backend'
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { backend, type Playlist, toast_error } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import { onMounted, onUnmounted, ref } from 'vue'
 import { toast } from 'vue-sonner'
 
-let interval: number | null = null
+let interval: ReturnType<typeof setTimeout> | null = null
 
 onMounted(
   () => {
@@ -126,7 +119,7 @@ onUnmounted(
 const playlist_id = defineModel<string>("")
 
 const loading = ref(false)
-const playlist = ref(null)
+const playlist = ref<Playlist | null>(null)
 
 const download_queue = ref([])
 const embedding_queue = ref([])
@@ -180,8 +173,6 @@ async function fetch_playlist(event: InputEvent) {
 }
 
 async function scrape() {
-  console.log('Scrape : playlist_id', playlist_id.value)
-
   const result = await backend.get('/scrape', {
     params: {
       playlist_id: playlist_id.value,

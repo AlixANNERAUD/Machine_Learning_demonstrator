@@ -46,7 +46,5 @@ async function fetch_data(event: InputEvent) {
   }
 
   tracks.value = result.data.data
-
-  console.log('tracks', tracks.value)
 }
 </script>

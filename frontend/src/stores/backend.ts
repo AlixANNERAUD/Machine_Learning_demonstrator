@@ -44,12 +44,43 @@ function getCookie(name: string): string | null {
   return null
 }
 
+interface ErrorResponse {
+  error: string
+}
+
+interface Track {
+  id: number
+  title_short: string
+  artist: {
+    name: string
+  }
+  album: {
+    title: string
+    cover_small: string
+  }
+  duration: number
+  artists: Array<{
+    artist_id: number
+    artist_name: string
+  }>
+  preview: string
+  playing?: boolean | null | undefined
+}
+
+interface Playlist {
+  picture_medium: string
+  title: string
+  description: string
+}
+
 function toast_error(error: AxiosError) {
   // The request was made and the server responded with a status code
   // that falls out of the range of 2xx
   if (error.response) {
-    if (error.response.data && error.response.data.error) {
-      toast.error(`Error: ${error.response.data.error}`)
+    if (error.response.data) {
+      const error_reponse = error.response.data as ErrorResponse
+
+      toast.error(`Error: ${error_reponse.error}`)
     } else {
       toast.error(`${error.response.statusText} (${error.response.status})`)
     }
@@ -64,4 +95,4 @@ function toast_error(error: AxiosError) {
   }
 }
 
-export { backend, backend_instance as backend_instance, toast_error }
+export { backend, backend_instance, toast_error, type Track, type Playlist }

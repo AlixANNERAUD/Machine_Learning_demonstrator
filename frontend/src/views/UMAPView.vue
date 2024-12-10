@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
 import { backend, toast_error } from '@/stores/backend'
-import Plotly from 'plotly.js-dist-min'
+import  { newPlot, type Layout, type PlotData } from 'plotly.js-dist-min'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -20,17 +20,17 @@ watch(() => route.params.id, fetch_data, { immediate: true })
 async function fetch_data() {
   loading.value = true
 
-  console.log('fetching data')
-
   const response = await backend
     .get('/umap', {
       timeout: 30000,
     })
     .catch(toast_error)
 
-  console.log('label', response.data.labels)
+  if (!response) {
+    return
+  }
 
-  const trace = {
+  const trace: Partial<PlotData> = {
     x: response.data.x,
     y: response.data.y,
     z: response.data.z,
@@ -44,9 +44,8 @@ async function fetch_data() {
     },
   }
 
-  const layout = {
+  const layout: Partial<Layout> = {
     autosize: true,
-    template: 'plotly_dark',
     margin: {
       l: 0,
       r: 0,
@@ -55,7 +54,7 @@ async function fetch_data() {
     },
   }
 
-  Plotly.newPlot('plot', [trace], layout, { responsive: true })
+  newPlot('plot', [trace], layout, { responsive: true })
 
   loading.value = false
 }

@@ -71,25 +71,7 @@ import Table from './ui/table/Table.vue'
 import TableBody from './ui/table/TableBody.vue'
 import TableCell from './ui/table/TableCell.vue'
 import TableRow from './ui/table/TableRow.vue'
-
-interface Track {
-  id: number
-  title_short: string
-  artist: {
-    name: string
-  }
-  album: {
-    title: string
-    cover_small: string
-  }
-  duration: number
-  artists: Array<{
-    artist_id: number
-    artist_name: string
-  }>
-  preview: string
-  playing?: boolean | null | undefined
-}
+import type { Track } from '@/stores/backend';
 
 function play_pause(event: MouseEvent) {
   const target = event.target as HTMLElement

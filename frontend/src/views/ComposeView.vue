@@ -2,11 +2,7 @@
   <div class="lg:px-24 space-y-4 py-6">
     <!--Navigation bar-->
     <div class="flex w-full max-w-sm items-center space-x-2">
-      <Input
-        placeholder="Enter a track to compose from ..."
-        v-model="track_id"
-        @input="handle_input"
-      />
+      <Input placeholder="Enter a track to compose from ..." v-model="track_id" @input="handle_input" />
 
       <Button @click="compose">
         <FontAwesomeIcon :icon="fas.faWandMagicSparkles" /> Compose
@@ -23,7 +19,7 @@
 import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
-import { backend, backend_instance, toast_error } from '@/stores/backend'
+import { backend, backend_instance, toast_error, type Track } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { defineProps, ref, watch } from 'vue'
@@ -40,9 +36,9 @@ const track_id = ref(props.track_id)
 
 const route = useRoute()
 
-const tracks = ref([])
+const tracks = ref([] as Track[])
 
-const preview_track = ref<object | null>(null)
+const preview_track = ref<Track | null>(null)
 
 watch(
   () => route.params.id,
@@ -74,8 +70,6 @@ async function fetch_tracks() {
   // Clear the tracks
   tracks.value = []
 
-  console.log('props.preview_url', props.preview_url)
-
   const result = await backend
     .get('/compose', {
       params: {
@@ -85,6 +79,11 @@ async function fetch_tracks() {
       timeout: 30000,
     })
     .catch(toast_error)
+
+  if (!result) {
+    loading.value = false
+    return
+  }
 
   const tracks_id = result.data.similar_tracks
 
@@ -96,8 +95,6 @@ async function fetch_tracks() {
         },
       })
       .then((result) => {
-        console.log('result', result.data)
-
         tracks.value.push(result.data)
       })
   }
@@ -106,7 +103,6 @@ async function fetch_tracks() {
 }
 
 function compose() {
-  console.log('ComposeView : compose')
   fetch_tracks()
 }
 </script>

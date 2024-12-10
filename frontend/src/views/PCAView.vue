@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
 import { backend, toast_error } from '@/stores/backend'
-import Plotly from 'plotly.js-dist-min'
+import { newPlot, type Layout, type PlotData } from 'plotly.js-dist-min'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -26,7 +26,7 @@ async function fetch_data() {
     return
   }
 
-  const trace = {
+  const trace: Partial<PlotData> = {
     x: response.data.x,
     y: response.data.y,
     z: response.data.z,
@@ -40,9 +40,8 @@ async function fetch_data() {
     },
   }
 
-  const layout = {
+  const layout: Partial<Layout> = {
     autosize: true,
-    template: 'plotly_dark',
     margin: {
       l: 0,
       r: 0,
@@ -51,7 +50,7 @@ async function fetch_data() {
     },
   }
 
-  Plotly.newPlot('plot', [trace], layout, { responsive: true })
+  newPlot('plot', [trace], layout, { responsive: true })
 
   loading.value = false
 }
