@@ -1,10 +1,5 @@
 FROM node:lts-alpine
 
-# Set environment variables
-env TSC_COMPILE_ON_ERROR=1
-env ESLINT_NO_DEV_ERRORS=1
-
-
 # Install simple http server for serving static content
 RUN npm install -g http-server
 
