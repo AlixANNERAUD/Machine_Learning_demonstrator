@@ -6,8 +6,13 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
 
     steps:
       - name: Set up | Checkout repository
