@@ -1,12 +1,14 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { toast } from 'vue-sonner'
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+
 class Backend {
   public axios: AxiosInstance
 
   constructor() {
     this.axios = axios.create({
-      baseURL: 'http://localhost:8000/api/',
+      baseURL: BACKEND_URL,
       timeout: 5000,
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +31,7 @@ class Backend {
 const backend_instance = new Backend()
 
 const backend = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: BACKEND_URL,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',

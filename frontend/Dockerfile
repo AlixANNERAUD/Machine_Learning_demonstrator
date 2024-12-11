@@ -1,22 +1,39 @@
-FROM node:lts-alpine
+# Build
+FROM node:lts-alpine AS build-stage
 
-# Install simple http server for serving static content
-RUN npm install -g http-server
-
-# Make the 'app' folder the current working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy 'package.json' to install dependencies
+ENV VITE_BACKEND_URL=VITE_BACKEND_URL_PLACEHOLDER
+
+# Copy the package.json and package-lock.json files to the working directory
 COPY package*.json ./
 
-# Install dependencies
+# Install the dependencies
 RUN npm install
 
-# Copy files and folders to the current working directory (i.e. 'app' folder)
+# Copy the rest of the files to the working directory
 COPY . .
 
-# Build app for production with minification
+# Build the project
 RUN npm run build
 
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+# Production
+FROM nginx:stable-alpine AS production-stage
+
+ENV APPLICATION_DIRECTORY=/usr/share/nginx/html
+
+# Copy the build files to the nginx server
+COPY --from=build-stage /app/dist $APPLICATION_DIRECTORY
+
+# Copy the substitute_environment_variables.sh script to the docker-entrypoint.d directory
+COPY --from=build-stage /app/substitute_environment_variables.sh /docker-entrypoint.d/substitute_environment_variables.sh
+
+# Change the permissions of the script
+RUN chmod +x /docker-entrypoint.d/substitute_environment_variables.sh
+
+# Expose the port 80
+EXPOSE 80
+
+# Start the nginx server
+CMD ["nginx", "-g", "daemon off;"]
