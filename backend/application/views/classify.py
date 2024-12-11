@@ -80,7 +80,8 @@ def train_model():
     # Get the embeddings
     classifier = MultiOutputClassifier(HistGradientBoostingClassifier())
 
-    grid_search = GridSearchCV(classifier, HYPERPARAMETERS, cv=5, n_jobs=-1)
+    # Perform a grid search to find the best hyperparameters
+    grid_search = GridSearchCV(classifier, HYPERPARAMETERS, cv=5, n_jobs=-1, scoring="f1_micro")
 
     grid_search.fit(embeddings, tracks_genres)
 
