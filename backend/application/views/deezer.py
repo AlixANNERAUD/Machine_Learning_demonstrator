@@ -14,7 +14,14 @@ TRACK_URL = f"{DEEZER_URL}/track"
 SEARCH_URL = f"{DEEZER_URL}/search"
 PLAYLIST_URL = f"{DEEZER_URL}/playlist"
 ALBUM_URL = f"{DEEZER_URL}/album"
+GENRE_URL = f"{DEEZER_URL}/genre"
 
+def get_genre(genre_id):
+    response = requests.get(f"{GENRE_URL}/{genre_id}")
+    
+    response.raise_for_status()
+    
+    return response.json()
 
 def get_album(album_id):
     response = requests.get(f"{ALBUM_URL}/{album_id}")
@@ -81,6 +88,19 @@ def get_track(track_id):
 
     return response.json()
 
+@api_view(["GET"])
+def genre_view(request):
+    genre_id = request.GET.get("genre_id", "")
+
+    if genre_id == "":
+        return JsonResponse({"error": "No genre identifier provided"}, status=400)
+
+    try:
+        genre = get_genre(genre_id)
+    except Exception as e:
+        return JsonResponse({str(e)}, status=500)
+
+    return JsonResponse(genre)
 
 @api_view(["GET"])
 def track_view(request):

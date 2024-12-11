@@ -77,7 +77,7 @@ def save_worker():
 
         # Check if album is already in the dataset
         try:
-            data.get_albums(metadata["album"]["id"])
+            data.get_album(metadata["album"]["id"])
         except KeyError:
             album = deezer.get_album(metadata["album"]["id"])
             data.add_album(metadata["album"]["id"], album)

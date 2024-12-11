@@ -99,32 +99,33 @@ def load_data():
         logging.error(f"Error loading ALBUMS: {e}")
         raise e
 
-    # Remove ALBUMS for tracks that do not have metadata
-    for track_id in list(ALBUMS.keys()):
-        if track_id not in METADATA:
-            logging.info(f"Removing album for track {track_id}")
-            del ALBUMS[track_id]
-
     # Get ALBUMS for tracks that do not have ALBUMS
-    for track_id, track in METADATA.items():
-        if track_id not in ALBUMS:
+    for track in METADATA.values():
+        if track["album"]["id"] not in ALBUMS:
             logging.info(f"Getting album for track {track_id}")
+            album_id = track["album"]["id"]
             album = deezer.get_album(track["album"]["id"])
-            ALBUMS[track_id] = album
+            ALBUMS[album_id] = album
 
     save()
 
 load_data()
 
-def get_albums(album_id):
+def get_album(album_id):
     global ALBUMS
+    
+    
 
     return ALBUMS[album_id]
 
+def get_albums():
+    global ALBUMS
+    
+    return ALBUMS
 
 def get_embeddings():
     global EMBEDDINGS
-
+    
     return EMBEDDINGS
 
 
@@ -150,7 +151,8 @@ def add_track(track_id, embedding, metadata):
 
     EMBEDDINGS[track_id] = embedding
     METADATA[track_id] = metadata
-
+    
+    
 def add_album(album_id, album):
     global ALBUMS
 
