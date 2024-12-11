@@ -8,22 +8,30 @@
         @input="handle_input"
       />
 
-      <Button @click="compose">
-        <FontAwesomeIcon :icon="fas.faWandMagicSparkles" /> Compose
+      <Button @click="fetch_classify">
+        <FontAwesomeIcon :icon="fas.faLayerGroup" /> Classify
       </Button>
     </div>
     <!--Preview track table-->
     <TracksTableComponent v-if="preview_track" :tracks="[preview_track]" />
-    <!--Result track table-->
-    <TracksTableComponent v-if="tracks.length" :tracks="tracks" />
+    <!--Result genres-->
+    <div v-if="genres.length" class="flex flex-wrap gap-4">
+      <Card class="w-full" v-for="genre in genres" :key="genre.id">
+        <CardHeader>
+          <img :src="genre.picture" class="w-24 h-24" alt="genre picture" />
+          <CardTitle>{{ genre.name }}</CardTitle>
+        </CardHeader>
+      </Card>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
-import { backend, backend_instance, toast_error, type Track } from '@/stores/backend'
+import { backend_instance, toast_error, type Track, type Genre } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { defineProps, ref, watch } from 'vue'
@@ -38,11 +46,13 @@ const loading = ref<boolean>(false)
 
 const track_id = ref(props.track_id)
 
+console.log(props.track_id)
+
 const route = useRoute()
 
-const tracks = ref([] as Track[])
-
 const preview_track = ref<Track | null>(null)
+
+const genres = ref<Genre[]>([])
 
 watch(
   () => route.params.id,
@@ -54,9 +64,14 @@ watch(
   { immediate: true },
 )
 
+async function fetch_track_preview(track_id: string) {
+  const track = await backend_instance.get_track(track_id).catch(toast_error)
+  preview_track.value = track || null
+}
+
 function handle_input(event: InputEvent) {
   preview_track.value = null
-  tracks.value = []
+  genres.value = []
 
   const target = event.target as HTMLInputElement
   const track_id = target.value
@@ -64,50 +79,33 @@ function handle_input(event: InputEvent) {
   fetch_track_preview(track_id)
 }
 
-async function fetch_track_preview(track_id: string) {
-  const track = await backend_instance.get_track(track_id).catch(toast_error)
-  preview_track.value = track || null
-}
-
-async function fetch_tracks() {
+async function fetch_classify() {
   loading.value = true
 
-  // Clear the tracks
-  tracks.value = []
+  genres.value = []
 
-  const result = await backend
-    .get('/compose', {
-      params: {
-        track_id: track_id.value,
-        preview_url: props.preview_url,
-      },
-      timeout: 30000,
-    })
-    .catch(toast_error)
-
-  if (!result) {
-    loading.value = false
+  if (!track_id.value) {
     return
   }
 
-  const tracks_id = result.data.similar_tracks
-
-  for (const track_id of tracks_id) {
-    backend
-      .get(`/deezer/track`, {
-        params: {
-          track_id,
-        },
-      })
-      .then((result) => {
-        tracks.value.push(result.data)
-      })
-  }
+  const result = await backend_instance.classify(track_id.value).catch(toast_error)
 
   loading.value = false
-}
 
-function compose() {
-  fetch_tracks()
+  if (!result) {
+    return
+  }
+
+  console.log(result)
+
+  for (const genre_id of result) {
+    const genre = await backend_instance.get_genre(genre_id).catch(toast_error)
+
+    if (!genre) {
+      continue
+    }
+
+    genres.value.push(genre)
+  }
 }
 </script>

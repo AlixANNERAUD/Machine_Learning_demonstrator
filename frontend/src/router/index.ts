@@ -6,6 +6,7 @@ const PCAView = () => import('@/views/PCAView.vue')
 const SearchView = () => import('@/views/SearchView.vue')
 const ComposeView = () => import('@/views/ComposeView.vue')
 const ScrapeView = () => import('@/views/ScrapeView.vue')
+const ClassifyView = () => import('@/views/ClassifyView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,12 @@ const router = createRouter({
       path: '/scrape',
       name: 'Scrape',
       component: ScrapeView,
+    },
+    {
+      path: '/classify/:track_id?/:preview_url?',
+      name: 'Classify',
+      component: ClassifyView,
+      props: true,
     },
   ],
 })

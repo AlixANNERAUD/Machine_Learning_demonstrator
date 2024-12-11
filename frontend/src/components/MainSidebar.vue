@@ -16,8 +16,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { useColorMode } from '@vueuse/core'
 import Button from './ui/button/Button.vue'
-import { Card, CardHeader, CardTitle, CardDescription } from './ui/card'
 import { fab } from '@fortawesome/free-brands-svg-icons'
+import { Separator } from './ui/separator'
 
 const data_group = [
   { title: 'Tracks', icon: 'faMusic', url: '/tracks' },
@@ -29,6 +29,7 @@ const data_group = [
 const composition_group = [
   { title: 'Search', icon: 'faSearch', url: '/search' },
   { title: 'Compose', icon: 'faWandMagicSparkles', url: '/compose' },
+  { title: 'Classify', icon: 'faLayerGroup', url: '/classify' },
 ]
 
 const groups = [
@@ -45,23 +46,29 @@ function toggle_mode() {
 
 <template>
   <Sidebar>
+    <!-- Header -->
     <SidebarHeader>
-      <Card>
-        <CardHeader>
-          <CardTitle> <a href="/">Deez'Nalyzer</a> </CardTitle>
-          <CardDescription> Analyze and compose music from Deezer's API </CardDescription>
-        </CardHeader>
-      </Card>
+      <div class="p-4">
+        <h3 class="text-2xl font-semibold leading-none tracking-tight text-center">
+          <a href="/">Deez'Nalyzer</a>
+        </h3>
+        <p class="text-sm text-muted-foreground text-center">
+          Analyze and compose music from Deezer's API
+        </p>
+      </div>
+      <Separator />
     </SidebarHeader>
-
+    <!-- Content -->
     <SidebarContent>
       <SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem v-for="group in groups" :key="group.title">
+            <!--Menu title-->
             <SidebarMenuButton>
               <FontAwesomeIcon :icon="fas[group.icon]" />
               {{ group.title }}
             </SidebarMenuButton>
+            <!-- Submenu -->
             <SidebarMenuSub>
               <SidebarMenuSubItem v-for="item in group.items" :key="item.title">
                 <router-link :to="item.url" v-slot="{ isActive }">
@@ -78,16 +85,31 @@ function toggle_mode() {
         </SidebarMenu>
       </SidebarGroup>
     </SidebarContent>
+    <!-- Footer -->
     <SidebarFooter>
+      <!--Buttons-->
       <div class="flex justify-center items-center gap-4">
+        <!--Color mode-->
         <Button @click="toggle_mode" variant="outline" size="icon">
           <FontAwesomeIcon :icon="fas.faAdjust" />
         </Button>
+        <!--GitHub-->
         <Button variant="outline" size="icon" as-child>
           <a href="https://github.com/AlixANNERAUD/Machine_learning_demonstrator">
             <FontAwesomeIcon :icon="fab.faGithub" />
           </a>
         </Button>
+      </div>
+
+      <Separator />
+      <!--Credits-->
+      <div class="px-4 py-2 text-sm text-muted-foreground">
+        <p>Made with ❤️ by :</p>
+        <ul class="list-disc list-inside">
+          <li><a class="underline" href="https://alix.anneraud.fr">Alix ANNERAUD</a></li>
+          <li>Josselin DULONGCOURTY</li>
+          <li>Mathis SAUNIER</li>
+        </ul>
       </div>
     </SidebarFooter>
   </Sidebar>

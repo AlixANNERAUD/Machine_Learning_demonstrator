@@ -37,6 +37,19 @@
               </Button>
             </router-link>
           </TableCell>
+          <!--Classify button-->
+          <TableCell>
+            <router-link
+              :to="{
+                name: 'Classify',
+                params: { track_id: track.id },
+              }"
+            >
+              <Button variant="outline">
+                <FontAwesomeIcon :icon="fas.faLayerGroup" />
+              </Button>
+            </router-link>
+          </TableCell>
           <!--Play/Pause button-->
           <TableCell>
             <Button @click="play_pause" :data-track-id="track.id">

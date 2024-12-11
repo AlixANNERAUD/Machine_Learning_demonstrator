@@ -17,7 +17,7 @@ class Backend {
     })
   }
 
-  public async get_track(track_id: string) {
+  public async get_track(track_id: string): Promise<Track> {
     const result = await this.axios.get(`/deezer/track`, {
       params: {
         track_id,
@@ -25,6 +25,37 @@ class Backend {
     })
 
     return result.data
+  }
+
+  public async classify(track_id: string): Promise<number[]> {
+    const result = await this.axios.get(`/classify`, {
+      params: {
+        track_id,
+      },
+      timeout: 20000,
+    })
+
+    return result.data['genres'] as number[]
+  }
+
+  public async get_genre(genre_id: number): Promise<Genre> {
+    const result = await this.axios.get(`/deezer/genre`, {
+      params: {
+        genre_id,
+      },
+    })
+
+    return result.data as Genre
+  }
+
+  public async get_playlist(playlist_id: string): Promise<Playlist> {
+    const result = await this.axios.get(`/deezer/playlist`, {
+      params: {
+        playlist_id,
+      },
+    })
+
+    return result.data as Playlist
   }
 }
 
@@ -44,6 +75,16 @@ function getCookie(name: string): string | null {
   const parts = value.split(`; ${name}=`)
   if (parts.length === 2) return parts.pop()?.split(';').shift() || null
   return null
+}
+
+interface Genre {
+  id: number
+  name: string
+  picture: string
+  picture_small: string
+  picture_medium: string
+  picture_big: string
+  picture_xl: string
 }
 
 interface ErrorResponse {
@@ -97,4 +138,4 @@ function toast_error(error: AxiosError) {
   }
 }
 
-export { backend, backend_instance, toast_error, type Track, type Playlist }
+export { backend, backend_instance, toast_error, type Track, type Playlist, type Genre }
