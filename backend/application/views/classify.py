@@ -1,11 +1,12 @@
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
-from django.apps import apps
+import json
 import logging
 import os
-import numpy
 import pickle
-import json
+
+import numpy
+from django.apps import apps
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
 
 from . import data, deezer, processing
 
@@ -18,70 +19,79 @@ BINARIZER_PATH = os.path.join(CONFIGURATION.data_path, "genre_binarizer.pickle")
 MODEL_PATH = os.path.join(CONFIGURATION.data_path, "genre_model.pickle")
 
 HYPERPARAMETERS = {}
+SPLITS = 5
+
 
 def predict_track(embedding):
     global MODEL, BINARIZER
 
     raw_predictions = MODEL.predict(embedding)
-    
+
     predictions = list(BINARIZER.inverse_transform(raw_predictions))
-    
+
     predictions = [int(genre) for genre in predictions[0]]
-    
+
     return list(predictions)
-    
-    
+
+
 def train_model():
-    from sklearn.pipeline import Pipeline
     from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
-    from sklearn.multioutput import MultiOutputClassifier
-    from sklearn.preprocessing import MultiLabelBinarizer
     from sklearn.model_selection import GridSearchCV
+    from sklearn.multioutput import MultiOutputClassifier
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import MultiLabelBinarizer
 
     logging.info("Training model")
 
     # Prepare the data for training
     albums = data.get_albums()
-    
+
     albums_genres = {}
     for identifier, album in albums.items():
         try:
             album_genres = [genre["id"] for genre in album["genres"]["data"]]
-            
+
             albums_genres[identifier] = album_genres
         except KeyError:
             logging.error(f"Album {identifier} has no genres")
-        
+
     tracks = data.get_metadata()
-        
+
     tracks_genres = []
     for track in tracks.values():
         try:
             album_genres = albums_genres[track["album"]["id"]]
-    
+
             tracks_genres.append(album_genres)
         except KeyError:
             logging.error(f"Track {track['id']} has no album")
-            
+
     # Binarize the genres
     binarizer = MultiLabelBinarizer()
     tracks_genres = binarizer.fit_transform(tracks_genres)
-    
+
     # Print the number of tracks by genre
     genres_counts = numpy.sum(tracks_genres, axis=0)
-    
+
     for genre, count in zip(binarizer.classes_, genres_counts):
         logging.info(f"Genre {genre}: {count} tracks")
-    
+
     # Get the embeddings
     embeddings = data.get_embeddings()
     embeddings = numpy.array(list(embeddings.values()))
+
+    if len(embeddings) < SPLITS:
+        logging.error("Not enough embeddings to train the model")
+        logging.warning("Please add more tracks to the database")
+        return None, None
 
     # Get the embeddings
     classifier = MultiOutputClassifier(HistGradientBoostingClassifier())
 
     # Perform a grid search to find the best hyperparameters
-    grid_search = GridSearchCV(classifier, HYPERPARAMETERS, cv=5, n_jobs=-1, scoring="f1_micro")
+    grid_search = GridSearchCV(
+        classifier, HYPERPARAMETERS, cv=SPLITS, n_jobs=-1, scoring="f1_micro"
+    )
 
     grid_search.fit(embeddings, tracks_genres)
 
@@ -115,7 +125,7 @@ def load_model():
 
         with open(MODEL_PATH, "wb") as file:
             pickle.dump(MODEL, file)
-            
+
         with open(BINARIZER_PATH, "wb") as file:
             pickle.dump(BINARIZER, file)
 
@@ -125,6 +135,7 @@ def load_model():
 
 
 load_model()
+
 
 @api_view(["GET"])
 def classify_view(request):
@@ -152,8 +163,5 @@ def classify_view(request):
 
     # Get the genre of the track
     prediction = predict_track(embedding.reshape(1, -1))
-    
+
     return JsonResponse({"genres": prediction})
-    
-    
-    
