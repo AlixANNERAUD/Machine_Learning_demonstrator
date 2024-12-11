@@ -107,8 +107,8 @@ function toggle_mode() {
         <p>Made with ❤️ by :</p>
         <ul class="list-disc list-inside">
           <li><a class="underline" href="https://alix.anneraud.fr">Alix ANNERAUD</a></li>
-          <li>Josselin DULONGCOURTY</li>
-          <li>Mathis SAUNIER</li>
+          <li><a class="underline" href="https://josselinonduty.fr">Josselin DULONGCOURTY</a></li>
+          <li><a class="underline" href="https://mathis-saunier.fr">Mathis SAUNIER</a></li>
         </ul>
       </div>
     </SidebarFooter>
