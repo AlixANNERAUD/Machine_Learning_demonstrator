@@ -112,9 +112,11 @@ def load_model():
     try:
         with open(MODEL_PATH, "rb") as file:
             MODEL = pickle.load(file)
+            logging.info("Loaded classifier")
 
         with open(BINARIZER_PATH, "rb") as file:
             BINARIZER = pickle.load(file)
+            logging.info("Loaded binarizer")
 
         logging.info("Loaded model")
     # If the file is not found, train the model
@@ -122,6 +124,8 @@ def load_model():
         logging.info("Model file not found, training model")
 
         MODEL, BINARIZER = train_model()
+        if MODEL is None or BINARIZER is None:
+            raise ValueError("Model could not be trained")
 
         with open(MODEL_PATH, "wb") as file:
             pickle.dump(MODEL, file)
