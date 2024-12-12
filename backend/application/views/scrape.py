@@ -1,12 +1,13 @@
-from queue import Queue
-from rest_framework.decorators import api_view
-from django.apps import apps
 import logging
 import threading
-from django.http import JsonResponse
-import threading
+from queue import Queue
 
-from . import deezer, processing, data
+from django.apps import apps
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from urllib3.exceptions import MaxRetryError
+
+from . import data, deezer, processing
 
 CONFIGURATION = apps.get_app_config("application")
 
@@ -27,7 +28,7 @@ def download_worker():
         # Check if the track is already in the dataset
         if data.track_exists(track_id):
             continue
-        
+
         # Get the track metadata
         try:
             metadata = deezer.get_track(track_id)
@@ -42,7 +43,11 @@ def download_worker():
             continue
 
         # Download the track
-        path = processing.download_track(track_id, metadata["preview"])
+        try:
+            path = processing.download_track(track_id, metadata["preview"])
+        except MaxRetryError as e:
+            logging.error(f"You are being rate limited by Deezer API: {e}")
+            exit(1)
 
         # Add the track id, path and metadata to the embedding queue
         EMBEDDING_QUEUE.put((track_id, path, metadata))
