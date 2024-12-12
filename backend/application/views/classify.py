@@ -69,15 +69,31 @@ def train_model():
     # Binarize the genres
     binarizer = MultiLabelBinarizer()
     tracks_genres = binarizer.fit_transform(tracks_genres)
+    logging.info(f"Found {len(binarizer.classes_)} genres")
+
+    # Filter out tracks with no genre
+    ids_with_genres = numpy.sum(tracks_genres, axis=1) > 0
 
     # Print the number of tracks by genre
-    genres_counts = numpy.sum(tracks_genres, axis=0)
+    genres_count = numpy.sum(ids_with_genres)
+    logging.info(
+        f"Found {genres_count} tracks with genre ({genres_count / len(tracks_genres) * 100:.2f}%)"
+    )
 
+    tracks_genres = tracks_genres[ids_with_genres]
+    genres_counts = numpy.sum(tracks_genres, axis=0)
     for genre, count in zip(binarizer.classes_, genres_counts):
         logging.info(f"Genre {genre}: {count} tracks")
 
     # Get the embeddings
     embeddings = data.get_embeddings()
+    logging.info(f"{len(embeddings)} embeddings")
+    embeddings = {
+        identifier: embedding
+        for i, (identifier, embedding) in enumerate(embeddings.items())
+        if ids_with_genres[i]
+    }
+    logging.info(f"{len(embeddings)} embeddings with genre")
     embeddings = numpy.array(list(embeddings.values()))
 
     if len(embeddings) < SPLITS:
@@ -103,6 +119,7 @@ def train_model():
 
 def load_model():
     global MODEL, BINARIZER
+    return
 
     # Check if the model is already loaded
     if MODEL is not None and BINARIZER is not None:
