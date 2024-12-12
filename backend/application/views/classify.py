@@ -119,7 +119,6 @@ def train_model():
 
 def load_model():
     global MODEL, BINARIZER
-    return
 
     # Check if the model is already loaded
     if MODEL is not None and BINARIZER is not None:
