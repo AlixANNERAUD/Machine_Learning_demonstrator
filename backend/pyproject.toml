@@ -22,8 +22,10 @@ datasets = "^3.2.0"
 transformers = "^4.47.0"
 django-cors-headers = "^4.6.0"
 djangorestframework = "^3.15.2"
-torch = {version = "^2.5.1+cpu", source = "pytorch_cuda"}
-torchaudio = {version = "^2.5.1+cpu", source = "pytorch_cuda"}
+torch = {version = "^2.5.1+cpu", source = "pytorch_cpu"}
+torchaudio = {version = "^2.5.1+cpu", source = "pytorch_cpu"}
+# torch = {version = "^2.5.1", source = "pytorch_cuda"}
+# torchaudio = {version = "^2.5.1", source = "pytorch_cuda"}
 
 [[tool.poetry.source]]
 name = "pytorch_cpu"
