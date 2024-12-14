@@ -102,10 +102,11 @@ def load_data():
     # Get ALBUMS for tracks that do not have ALBUMS
     for track in METADATA.values():
         if track["album"]["id"] not in ALBUMS:
-            logging.info(f"Getting album for track {track_id}")
+            logging.info(f"Getting album {track['album']['id']} for track {track['id']}")
             album_id = track["album"]["id"]
             album = deezer.get_album(track["album"]["id"])
             ALBUMS[album_id] = album
+            save()
 
     save()
 
