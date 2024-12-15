@@ -16,12 +16,12 @@
 <script setup lang="ts">
 import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Input from '@/components/ui/input/Input.vue'
-import { backend, toast_error } from '@/stores/backend'
+import { backend_instance, toast_error, type Track } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref } from 'vue'
 
-const tracks = ref([])
+const tracks = ref<Track[]>([])
 
 async function fetch_data(event: InputEvent) {
   tracks.value = []
@@ -33,18 +33,12 @@ async function fetch_data(event: InputEvent) {
     return
   }
 
-  const result = await backend
-    .get('/deezer/search', {
-      params: {
-        query: query,
-      },
-    })
-    .catch(toast_error)
+  const response = await backend_instance.search_deezer(query).catch(toast_error)
 
-  if (!result || !result.data.data) {
+  if (!response) {
     return
   }
 
-  tracks.value = result.data.data
+  tracks.value = response
 }
 </script>

@@ -23,11 +23,12 @@
 import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
-import { backend, backend_instance, toast_error, type Track } from '@/stores/backend'
+import { backend_instance, toast_error, type Track } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { defineProps, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { toast } from 'vue-sonner'
 
 const props = defineProps({
   track_id: String,
@@ -70,37 +71,31 @@ async function fetch_track_preview(track_id: string) {
 }
 
 async function fetch_tracks() {
+  if (!track_id.value) {
+    toast.info('Please enter a track id')
+    return
+  }
+
   loading.value = true
 
   // Clear the tracks
   tracks.value = []
 
-  const result = await backend
-    .get('/compose', {
-      params: {
-        track_id: track_id.value,
-        preview_url: props.preview_url,
-      },
-      timeout: 30000,
-    })
-    .catch(toast_error)
+  const response = await backend_instance.compose(track_id.value).catch(toast_error)
 
-  if (!result) {
+  if (!response) {
     loading.value = false
     return
   }
 
-  const tracks_id = result.data.similar_tracks
-
-  for (const track_id of tracks_id) {
-    backend
-      .get(`/deezer/track`, {
-        params: {
-          track_id,
-        },
-      })
+  for (const track_id of response) {
+    backend_instance
+      .get_track(track_id)
+      .catch(toast_error)
       .then((result) => {
-        tracks.value.push(result.data)
+        if (result) {
+          tracks.value.push(result)
+        }
       })
   }
 

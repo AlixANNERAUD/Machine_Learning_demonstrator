@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
-import { backend, toast_error } from '@/stores/backend'
+import { backend_instance, toast_error } from '@/stores/backend'
 import { newPlot, type Layout, type PlotData } from 'plotly.js-dist-min'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -20,22 +20,22 @@ watch(() => route.params.id, fetch_data, { immediate: true })
 async function fetch_data() {
   loading.value = true
 
-  const response = await backend.get('/pca').catch(toast_error)
+  const response = await backend_instance.get_PCA().catch(toast_error)
 
   if (!response) {
     return
   }
 
   const trace: Partial<PlotData> = {
-    x: response.data.x,
-    y: response.data.y,
-    z: response.data.z,
-    text: response.data.labels,
+    x: response.x,
+    y: response.y,
+    z: response.z,
+    text: response.labels,
     type: 'scatter3d',
     mode: 'markers',
     marker: {
       size: 3,
-      color: response.data.z,
+      color: response.z,
       colorscale: 'Viridis',
     },
   }

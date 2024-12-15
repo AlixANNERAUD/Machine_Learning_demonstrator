@@ -4,7 +4,7 @@ import { toast } from 'vue-sonner'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 class Backend {
-  public axios: AxiosInstance
+  private axios: AxiosInstance
 
   constructor() {
     this.axios = axios.create({
@@ -17,64 +17,126 @@ class Backend {
     })
   }
 
+  public async get_tracks(page: number = 0, search: string = ''): Promise<[Track[], number]> {
+    const response = await this.axios.get(`/tracks`, {
+      params: {
+        page,
+        search,
+      },
+    })
+
+    return [response.data.tracks, response.data.total_pages]
+  }
+
   public async get_track(track_id: string): Promise<Track> {
-    const result = await this.axios.get(`/deezer/track`, {
+    const response = await this.axios.get(`/deezer/track`, {
       params: {
         track_id,
       },
     })
 
-    return result.data
+    return response.data
   }
 
   public async classify(track_id: string): Promise<number[]> {
-    const result = await this.axios.get(`/classify`, {
+    const response = await this.axios.get(`/classify`, {
       params: {
         track_id,
       },
       timeout: 20000,
     })
 
-    return result.data['genres'] as number[]
+    return response.data['genres'] as number[]
   }
 
   public async get_genre(genre_id: number): Promise<Genre> {
-    const result = await this.axios.get(`/deezer/genre`, {
+    const response = await this.axios.get(`/deezer/genre`, {
       params: {
         genre_id,
       },
     })
 
-    return result.data as Genre
+    return response.data as Genre
   }
 
   public async get_playlist(playlist_id: string): Promise<Playlist> {
-    const result = await this.axios.get(`/deezer/playlist`, {
+    const response = await this.axios.get(`/deezer/playlist`, {
       params: {
         playlist_id,
       },
     })
 
-    return result.data as Playlist
+    return response.data as Playlist
+  }
+
+  public async get_queues(): Promise<[string[], string[]]> {
+    const response = await this.axios.get(`/queues`)
+
+    return [response.data.download_queue, response.data.embedding_queue]
+  }
+
+  public async scrape(playlist_id: string): Promise<void> {
+    const response = await this.axios.post(`/scrape`, {
+      playlist_id,
+    })
+
+    if (response.data.error) {
+      throw new Error(response.data.error)
+    }
+  }
+
+  public async get_UMAP(): Promise<PlotData> {
+    const response = await this.axios.get(`/umap`, {
+      timeout: 30000,
+    })
+
+    return response.data as PlotData
+  }
+
+  public async get_PCA(): Promise<PlotData> {
+    const response = await this.axios.get(`/pca`, {
+      timeout: 30000,
+    })
+
+    return response.data as PlotData
+  }
+
+  public async search_deezer(query: string): Promise<Track[]> {
+    const response = await this.axios.get(`/deezer/search`, {
+      params: {
+        query,
+      },
+    })
+
+    return response.data.data as Track[]
+  }
+
+  public async compose(track_id: string): Promise<string[]> {
+    const response = await this.axios.get(`/compose`, {
+      params: {
+        track_id,
+      },
+      timeout: 30000,
+    })
+
+    return response.data.similar_tracks as string[]
   }
 }
 
 const backend_instance = new Backend()
-
-const backend = axios.create({
-  baseURL: BACKEND_URL,
-  timeout: 5000,
-  headers: {
-    'Content-Type': 'application/json',
-    'X-CSRFToken': getCookie('csrftoken'), // Utility function to extract CSRF token
-  },
-})
 
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`
   const parts = value.split(`; ${name}=`)
   if (parts.length === 2) return parts.pop()?.split(';').shift() || null
   return null
+}
+
+interface PlotData {
+  x: number[]
+  y: number[]
+  z: number[]
+  labels: string[]
 }
 
 interface Genre {
@@ -138,4 +200,4 @@ function toast_error(error: AxiosError) {
   }
 }
 
-export { backend, backend_instance, toast_error, type Track, type Playlist, type Genre }
+export { backend_instance, toast_error, type Track, type Playlist, type Genre }

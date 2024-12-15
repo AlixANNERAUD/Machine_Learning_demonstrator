@@ -100,7 +100,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Input from '@/components/ui/input/Input.vue'
 import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import { backend, type Playlist, toast_error } from '@/stores/backend'
+import { backend_instance, type Playlist, toast_error } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -122,19 +122,18 @@ const playlist_id = defineModel<string>('')
 const loading = ref(false)
 const playlist = ref<Playlist | null>(null)
 
-const download_queue = ref([])
-const embedding_queue = ref([])
+const download_queue = ref<string[]>([])
+const embedding_queue = ref<string[]>([])
 
 async function fetch_queues() {
-  const result = await backend.get('/queues').catch(toast_error)
+  const result = await backend_instance.get_queues().catch(toast_error)
 
   if (!result) {
     return
   }
 
-  download_queue.value = result.data.download_queue
-
-  embedding_queue.value = result.data.embedding_queue
+  download_queue.value = result[0]
+  embedding_queue.value = result[1]
 }
 
 async function fetch_playlist(event: InputEvent) {
@@ -148,40 +147,30 @@ async function fetch_playlist(event: InputEvent) {
   }
 
   const target = event.target as HTMLInputElement
-  const query = target.value
+  const playlist_id = target.value
 
-  if (!query) {
+  if (!playlist_id) {
     return
   }
 
-  const result = await backend
-    .get('/deezer/playlist', {
-      params: {
-        playlist_id: query,
-      },
-    })
-    .catch(toast_error)
+  const result = await backend_instance.get_playlist(playlist_id).catch(toast_error)
 
   loading.value = false
 
-  if (!result || !result.data.title || !result.data.description) {
+  if (!result) {
     return
   }
 
-  playlist.value = result.data
+  playlist.value = result
 }
 
 async function scrape() {
-  const result = await backend.get('/scrape', {
-    params: {
-      playlist_id: playlist_id.value,
-    },
-  })
-
-  if (result.data.error) {
-    toast.error(result.data.error)
+  if (!playlist_id.value) {
+    toast.error('No playlist id')
     return
   }
+
+  await backend_instance.scrape(playlist_id.value).catch(toast_error)
 
   toast.success('Scraping started')
 }

@@ -55,30 +55,27 @@
     </div>
 
     <!--Table-->
-    <Skeleton v-if="loading" />
-    <MusicTableComponent v-if="tracks.length" :tracks="tracks" />
+    <TracksTableComponent v-if="tracks.length" :tracks="tracks" />
   </div>
 </template>
 
 <script setup lang="ts">
-import MusicTableComponent from '@/components/TracksTableComponent.vue'
+import TracksTableComponent from '@/components/TracksTableComponent.vue'
 import Button from '@/components/ui/button/Button.vue'
 import Input from '@/components/ui/input/Input.vue'
 import { Pagination, PaginationList } from '@/components/ui/pagination'
 import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue'
-import Skeleton from '@/components/ui/skeleton/Skeleton.vue'
-import { backend, toast_error, type Track } from '@/stores/backend'
+import { backend_instance, toast_error, type Track } from '@/stores/backend'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { toast } from 'vue-sonner'
 
 const loading = ref(true)
 
 const route = useRoute()
 
-const tracks = ref<Track[]>([])
+const tracks = ref<Array<Track>>([])
 const total_pages = ref<number>(0)
 const current_page = ref<number>(1)
 let search = ''
@@ -88,26 +85,26 @@ watch(() => route.params.id, fetch_data, { immediate: true })
 async function fetch_data() {
   loading.value = true
 
-  const params: { page: number; search?: string } = {
-    page: current_page.value,
-  }
+  const response = await backend_instance.get_tracks(current_page.value, search).catch(toast_error)
 
-  if (search.length > 0) {
-    params.search = search
-  }
-
-  const response = await backend.get('/tracks', { params }).catch(toast_error)
+  console.log('response', response)
 
   loading.value = false
 
   if (!response) {
-    toast.error('No response from server')
     return
   }
 
-  tracks.value = response.data.tracks
+  console.log('tracks', tracks.value)
 
-  total_pages.value = response.data.total_pages
+  console.log('response  2', response)
+
+  tracks.value = response[0]
+  total_pages.value = response[1]
+
+  console.log('tracks', tracks.value)
+
+  console.log('total_pages', total_pages.value)
 }
 
 function search_track(event: InputEvent) {
