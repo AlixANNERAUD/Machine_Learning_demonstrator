@@ -172,3 +172,5 @@ cython_debug/
 *embedding*.npy
 processed_ids*.txt
 *.pickle
+
+poetry.lock
