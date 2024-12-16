@@ -123,6 +123,14 @@ class Backend {
 
     return response.data.similar_tracks as string[]
   }
+
+  public async get_explained_variance_ratio(): Promise<number[]> {
+    const response = await this.axios.get(`/explained_variance_ratio`)
+
+    console.log(response.data)
+
+    return response.data.explained_variance_ratio as number[]
+  }
 }
 
 const backend_instance = new Backend()

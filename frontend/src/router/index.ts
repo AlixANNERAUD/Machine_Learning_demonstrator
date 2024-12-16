@@ -7,6 +7,7 @@ const SearchView = () => import('@/views/SearchView.vue')
 const ComposeView = () => import('@/views/ComposeView.vue')
 const ScrapeView = () => import('@/views/ScrapeView.vue')
 const ClassifyView = () => import('@/views/ClassifyView.vue')
+const VarianceView = () => import('@/views/VarianceView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,11 @@ const router = createRouter({
       path: '/pca',
       name: 'PCA',
       component: PCAView,
+    },
+    {
+      path: '/variance',
+      name: 'Variance',
+      component: VarianceView,
     },
     {
       path: '/compose/:track_id?/:preview_url?',

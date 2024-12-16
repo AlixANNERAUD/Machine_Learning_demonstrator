@@ -24,6 +24,7 @@ const data_group = [
   { title: 'Scrape', icon: 'faCloudArrowDown', url: '/scrape' },
   { title: 'UMAP', icon: 'faChartLine', url: '/umap' },
   { title: 'PCA', icon: 'faChartLine', url: '/pca' },
+  { title: 'Variance', icon: 'faScaleUnbalanced', url: '/variance' },
 ]
 
 const composition_group = [

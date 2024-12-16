@@ -75,7 +75,7 @@ const props = defineProps({
 
 const tracks = ref(props.tracks)
 
-import format_time from '@/stores/utils'
+import { format_time } from '@/stores/utils'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref } from 'vue'
