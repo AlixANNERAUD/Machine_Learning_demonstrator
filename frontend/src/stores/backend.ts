@@ -76,8 +76,10 @@ class Backend {
   }
 
   public async scrape(playlist_id: string): Promise<void> {
-    const response = await this.axios.post(`/scrape`, {
-      playlist_id,
+    const response = await this.axios.get(`/scrape`, {
+      params: {
+        playlist_id,
+      },
     })
 
     if (response.data.error) {
