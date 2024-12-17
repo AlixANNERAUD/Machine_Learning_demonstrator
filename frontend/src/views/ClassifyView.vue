@@ -36,6 +36,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { defineProps, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { toast } from 'vue-sonner'
 
 const props = defineProps({
   track_id: String,
@@ -85,8 +86,11 @@ async function fetch_classify() {
   genres.value = []
 
   if (!track_id.value) {
+    toast.info('Please enter a track id')
     return
   }
+
+  toast.info('Classifying track ...')
 
   const result = await backend_instance.classify(track_id.value).catch(toast_error)
 
@@ -97,6 +101,11 @@ async function fetch_classify() {
   }
 
   console.log(result)
+
+  if (!result.length) {
+    toast.info('No genres found for this track')
+    return
+  }
 
   for (const genre_id of result) {
     const genre = await backend_instance.get_genre(genre_id).catch(toast_error)

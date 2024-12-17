@@ -81,6 +81,8 @@ async function fetch_tracks() {
   // Clear the tracks
   tracks.value = []
 
+  toast.info('Composing tracks ...')
+
   const response = await backend_instance.compose(track_id.value).catch(toast_error)
 
   if (!response) {
