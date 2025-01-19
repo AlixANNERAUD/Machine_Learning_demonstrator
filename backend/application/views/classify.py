@@ -139,6 +139,10 @@ def load_model():
     except FileNotFoundError:
         logging.info("Model file not found, training model")
 
+        if len(data.get_albums()) == 0:
+            logging.error("No data found, cannot train model")
+            return
+
         MODEL, BINARIZER = train_model()
         if MODEL is None or BINARIZER is None:
             raise ValueError("Model could not be trained")
