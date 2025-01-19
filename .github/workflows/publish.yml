@@ -35,6 +35,9 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ghcr.io/alixanneraud/deez-nalyzer-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
 
       - name: Build | Frontend Docker image
         uses: docker/build-push-action@v6
@@ -43,3 +46,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: ghcr.io/alixanneraud/deez-nalyzer-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
