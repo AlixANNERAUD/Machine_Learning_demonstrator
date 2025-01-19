@@ -36,18 +36,6 @@ class ApplicationConfig(AppConfig):
         self.data_path = os.getenv("DATA_PATH", "data")
 
         self.audio_path = os.getenv("AUDIO_PATH", "/tmp/deez_nalyzer")
-        
-        self.spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
-
-        if self.spotify_client_id is None:
-            logging.error("Spotify client id not found")
-            raise ValueError("Spotify client id not found")
-
-        self.spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
-
-        if self.spotify_client_secret is None:
-            logging.error("Spotify client secret not found")
-            raise ValueError("Spotify client secret not found")
 
     def ready(self):
         logging.basicConfig(level=logging.INFO)

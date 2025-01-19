@@ -10,9 +10,6 @@ services:
     image: ghcr.io/alixanneraud/deez-nalyzer-backend:latest
     ports:
       - "8000:8000"
-    environment:
-      - SPOTIFY_CLIENT_ID=""
-      - SPOTIFY_CLIENT_SECRET=""
     volumes:
       - ./data:/app/data 
       - ./cache:/home/root/.cache/huggingface/hug
