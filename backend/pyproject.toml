@@ -7,26 +7,26 @@ readme = "../README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.11"
-scipy = "^1.14.1"
-django = "^5.1.4"
-pandas = "^2.2.3"
-python-dotenv = "^1.0.1"
-scikit-learn = "^1.6.0"
-numba = "^0.60.0"
-whitenoise = "^6.8.2"
-librosa = "^0.10.2.post1"
-soundfile = "^0.12.1"
-pydub = "^0.25.1"
-datasets = "^3.2.0"
-transformers = "^4.47.0"
-umap-learn = "^0.5.7"
-django-cors-headers = "^4.6.0"
-djangorestframework = "^3.15.2"
-torch = {version = "^2.5.1+cpu", source = "pytorch_cpu"}
-torchaudio = {version = "^2.5.1+cpu", source = "pytorch_cpu"}
-# torch = {version = "^2.5.1", source = "pytorch_cuda"}
-# torchaudio = {version = "^2.5.1", source = "pytorch_cuda"}
+python = "3.11.*"
+scipy = "1.14.*"
+django = "5.1.*"
+pandas = "2.2.*"
+python-dotenv = "1.0.*"
+scikit-learn = "1.6.*"
+numba = "0.60.*"
+whitenoise = "6.8.*"
+librosa = "0.10.*"
+soundfile = "0.12.*"
+pydub = "0.25.*"
+datasets = "3.2.*"
+transformers = "4.47.*"
+umap-learn = "0.5.*"
+django-cors-headers = "4.6.*"
+djangorestframework = "3.15.*"
+torch = {version = "2.5.*", source = "pytorch_cpu"}
+torchaudio = {version = "2.5.*", source = "pytorch_cpu"}
+# torch = {version = "2.5.*", source = "pytorch_cuda"}
+# torchaudio = {version = "2.5.*", source = "pytorch_cuda"}
 
 [[tool.poetry.source]]
 name = "pytorch_cpu"
